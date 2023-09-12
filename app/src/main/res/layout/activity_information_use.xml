@@ -106,7 +106,7 @@
         />
     <Button
         android:id="@+id/allow_btn"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="60dp"
         android:text="허용하기"
         android:textSize="30dp"
