@@ -13,6 +13,21 @@
         android:theme="@style/Theme.DTalk"
         tools:targetApi="31">
         <activity
+            android:name=".friend"
+            android:exported="false" />
+        <activity
+            android:name=".find_ps_result"
+            android:exported="false" />
+        <activity
+            android:name=".find_ps"
+            android:exported="false" />
+        <activity
+            android:name=".find_id_result"
+            android:exported="false" />
+        <activity
+            android:name=".find_id"
+            android:exported="false" />
+        <activity
             android:name=".signUp"
             android:exported="false" />
         <activity
