@@ -17,6 +17,8 @@
         android:textSize="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        app:layout_constraintVertical_weight="1"
+        android:gravity="bottom"
         />
     <EditText
         android:id="@+id/input_id"
@@ -31,6 +33,7 @@
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
+        app:layout_constraintVertical_weight="1"
         />
     <TextView
         android:id="@+id/ps_text"
@@ -44,6 +47,8 @@
         android:textSize="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        app:layout_constraintVertical_weight="1"
+        android:gravity="bottom"
         />
     <EditText
         android:id="@+id/input_ps"
@@ -58,6 +63,7 @@
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
+        app:layout_constraintVertical_weight="1"
         />
     <TextView
         android:id="@+id/ps_confirm"
@@ -71,6 +77,8 @@
         android:textSize="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        app:layout_constraintVertical_weight="1"
+        android:gravity="bottom"
         />
     <EditText
         android:id="@+id/ps_input_confirm"
@@ -85,6 +93,7 @@
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
+        app:layout_constraintVertical_weight="1"
         />
     <TextView
         android:id="@+id/nick_text"
@@ -98,6 +107,8 @@
         android:textSize="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        app:layout_constraintVertical_weight="1"
+        android:gravity="bottom"
         />
     <EditText
         android:id="@+id/nick_input"
@@ -112,6 +123,7 @@
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
+        app:layout_constraintVertical_weight="1"
         />
     <TextView
         android:id="@+id/phone_number_verifi"
@@ -125,6 +137,8 @@
         android:textSize="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        app:layout_constraintVertical_weight="1"
+        android:gravity="bottom"
         />
     <View
         android:id="@+id/phone_number_verifi_group"
@@ -134,56 +148,63 @@
         app:layout_constraintLeft_toLeftOf="@id/phone_number_verifi"
         app:layout_constraintRight_toRightOf="@id/phone_number_verifi"
         app:layout_constraintBottom_toTopOf="@id/signUp_btn"
+        app:layout_constraintVertical_weight="2"
         />
     <EditText
         android:id="@+id/phone_number_input"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/phone_number_verifi_group"
-        app:layout_constraintLeft_toRightOf="@id/phone_number_verifi_group"
+        app:layout_constraintTop_toTopOf="@id/phone_number_verifi_group"
+        app:layout_constraintLeft_toLeftOf="@id/phone_number_verifi_group"
         app:layout_constraintRight_toLeftOf="@id/send_certification_btn"
         app:layout_constraintBottom_toTopOf="@id/certification_input"
-        android:hint="휴대폰 번호를 입력해주세요."
+        android:hint="휴대폰 번호를\n입력 해주세요."
+        android:gravity="center"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
+        app:layout_constraintHorizontal_weight="1.5"
         />
     <Button
         android:id="@+id/send_certification_btn"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="인증번호 발송"
         android:textSize="15dp"
-        app:layout_constraintTop_toBottomOf="@id/phone_number_verifi_group"
+        app:layout_constraintTop_toTopOf="@id/phone_number_verifi_group"
         app:layout_constraintLeft_toRightOf="@id/phone_number_input"
-        app:layout_constraintRight_toLeftOf="@id/phone_number_verifi_group"
+        app:layout_constraintRight_toRightOf="@id/phone_number_verifi_group"
         app:layout_constraintBottom_toTopOf="@id/certification_btn"
+        app:layout_constraintHorizontal_weight="1"
         />
     <EditText
         android:id="@+id/certification_input"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/phone_number_input"
-        app:layout_constraintLeft_toRightOf="@id/phone_number_verifi_group"
+        app:layout_constraintLeft_toLeftOf="@id/phone_number_verifi_group"
         app:layout_constraintRight_toLeftOf="@id/certification_btn"
-        app:layout_constraintBottom_toTopOf="@id/phone_number_verifi_group"
-        android:hint="인증번호를 입력해주세요."
+        app:layout_constraintBottom_toBottomOf="@id/phone_number_verifi_group"
+        android:hint="인증번호를\n입력해주세요."
+        android:gravity="center"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
+        app:layout_constraintHorizontal_weight="1.5"
         />
     <Button
         android:id="@+id/certification_btn"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="인증"
         android:textSize="15dp"
         app:layout_constraintTop_toBottomOf="@id/send_certification_btn"
         app:layout_constraintLeft_toRightOf="@id/certification_input"
         app:layout_constraintRight_toRightOf="@id/phone_number_verifi_group"
-        app:layout_constraintBottom_toTopOf="@id/phone_number_verifi_group"
+        app:layout_constraintBottom_toBottomOf="@id/phone_number_verifi_group"
+        app:layout_constraintHorizontal_weight="1"
         />
     <Button
         android:id="@+id/signUp_btn"
@@ -195,6 +216,8 @@
         app:layout_constraintLeft_toLeftOf="@id/phone_number_verifi_group"
         app:layout_constraintRight_toRightOf="@id/phone_number_verifi_group"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_weight="1.2"
+        android:layout_marginTop="10dp"
         />
 
 
