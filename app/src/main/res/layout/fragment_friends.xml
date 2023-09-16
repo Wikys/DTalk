@@ -35,15 +35,17 @@
             android:scaleType="centerInside"
             android:layout_gravity="end"
             android:layout_weight="1"
+            android:background=""
 
             />
         <ImageButton
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:src="@drawable/hambuger_icon"
-            android:scaleType="centerInside"
+            android:src="@drawable/plus_button_icon"
+            android:scaleType="centerCrop"
             android:layout_gravity="end"
             android:layout_weight="1"
+            android:background=""
 
             />
 
@@ -76,11 +78,11 @@
         app:layout_constraintTop_toTopOf="@id/my_profile"
         app:layout_constraintLeft_toRightOf="@id/my_profile_img"
         app:layout_constraintBottom_toTopOf="@id/my_porfile_msg"
-
+        android:gravity="bottom"
         android:layout_marginLeft="10dp"
+        android:textSize="20dp"
         />
     <TextView
-        android:layout_marginTop="10dp"
         android:id="@+id/my_porfile_msg"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -88,6 +90,42 @@
         app:layout_constraintTop_toBottomOf="@id/my_profile_nick"
         app:layout_constraintLeft_toRightOf="@id/my_profile_img"
         app:layout_constraintBottom_toBottomOf="@id/my_profile"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:textSize="15dp"
+        />
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/number_of_friends_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintTop_toBottomOf="@id/my_porfile_msg"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+    <TextView
+        android:id="@+id/number_of_friends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/number_of_friends_divider"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="친구 2"
+        android:textSize="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
 
         />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/friends_profile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/number_of_friends"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="10dp"
+        />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
