@@ -5,17 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".my_profile">
-    <ImageButton
-        android:id="@+id/edit_profile_background_btn"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background=""
-        android:src="@drawable/image_icon"
-        android:scaleType="centerInside"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_margin="10dp"
-        />
+
     <ImageButton
         android:id="@+id/exit_btn"
         android:layout_width="40dp"
@@ -90,72 +80,74 @@
         app:layout_constraintBottom_toBottomOf="parent"
         />
     <View
-        android:id="@+id/chat_with_me_btn"
+        android:id="@+id/one_to_one_chat_btn"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="@id/bottom_menu"
         app:layout_constraintLeft_toLeftOf="@id/bottom_menu"
-        app:layout_constraintRight_toLeftOf="@id/edit_profile_btn"
+        app:layout_constraintRight_toLeftOf="@id/ignore_user_btn"
         app:layout_constraintBottom_toBottomOf="@id/bottom_menu"
         android:clickable="true"
         />
     <ImageView
-        android:id="@+id/chat_with_me_img"
+        android:id="@+id/one_to_one_chat_img"
         android:layout_width="80dp"
         android:layout_height="50dp"
-        app:layout_constraintTop_toTopOf="@+id/chat_with_me_btn"
-        app:layout_constraintLeft_toLeftOf="@id/chat_with_me_btn"
-        app:layout_constraintRight_toRightOf="@id/chat_with_me_btn"
-        app:layout_constraintBottom_toTopOf="@+id/chat_with_me_Text"
+        app:layout_constraintTop_toTopOf="@id/one_to_one_chat_btn"
+        app:layout_constraintLeft_toLeftOf="@id/one_to_one_chat_btn"
+        app:layout_constraintRight_toRightOf="@id/one_to_one_chat_btn"
+        app:layout_constraintBottom_toTopOf="@id/one_to_one_chat_text"
         android:src="@drawable/speech_bubble_icon"
         app:layout_constraintVertical_chainStyle="packed"
         android:layout_marginBottom="20dp"
-        /><!--말풍선 이미지-->
+        />
     <TextView
-        android:id="@+id/chat_with_me_Text"
+        android:id="@+id/one_to_one_chat_text"
         android:layout_width="100dp"
         android:layout_height="30dp"
-        android:text="나와의 채팅"
+        android:text="1:1 채팅"
         android:textSize="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/chat_with_me_img"
-        app:layout_constraintLeft_toLeftOf="@id/chat_with_me_btn"
-        app:layout_constraintRight_toRightOf="@id/chat_with_me_btn"
-        app:layout_constraintBottom_toBottomOf="@id/chat_with_me_btn"
         android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/one_to_one_chat_img"
+        app:layout_constraintLeft_toLeftOf="@id/one_to_one_chat_btn"
+        app:layout_constraintRight_toRightOf="@id/one_to_one_chat_btn"
+        app:layout_constraintBottom_toBottomOf="@id/one_to_one_chat_btn"
         />
+
     <View
-        android:id="@+id/edit_profile_btn"
+        android:id="@+id/ignore_user_btn"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="@id/bottom_menu"
-        app:layout_constraintLeft_toRightOf="@id/chat_with_me_btn"
+        app:layout_constraintLeft_toRightOf="@id/one_to_one_chat_btn"
         app:layout_constraintRight_toRightOf="@id/bottom_menu"
         app:layout_constraintBottom_toBottomOf="@id/bottom_menu"
         />
     <ImageView
-        android:id="@+id/edit_profile_img"
+        android:id="@+id/ignore_user_img"
         android:layout_width="80dp"
         android:layout_height="50dp"
-        app:layout_constraintTop_toTopOf="@+id/edit_profile_btn"
-        app:layout_constraintLeft_toLeftOf="@id/edit_profile_btn"
-        app:layout_constraintRight_toRightOf="@id/edit_profile_btn"
-        app:layout_constraintBottom_toTopOf="@id/edit_profile_text"
-        android:src="@drawable/pen_icon"
+        android:src="@drawable/ignore_speech_bubble_icon"
         app:layout_constraintVertical_chainStyle="packed"
         android:layout_marginBottom="20dp"
-        /><!--말풍선 이미지-->
+        app:layout_constraintTop_toTopOf="@id/ignore_user_btn"
+        app:layout_constraintLeft_toLeftOf="@id/ignore_user_btn"
+        app:layout_constraintRight_toRightOf="@id/ignore_user_btn"
+        app:layout_constraintBottom_toTopOf="@id/ignore_user_text"
+        />
     <TextView
-        android:id="@+id/edit_profile_text"
+        android:id="@+id/ignore_user_text"
         android:layout_width="100dp"
         android:layout_height="30dp"
-        android:text="프로필 편집"
+        android:text="차단하기"
         android:textSize="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/edit_profile_img"
-        app:layout_constraintLeft_toLeftOf="@id/edit_profile_btn"
-        app:layout_constraintRight_toRightOf="@id/edit_profile_btn"
-        app:layout_constraintBottom_toBottomOf="@id/edit_profile_btn"
         android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/ignore_user_img"
+        app:layout_constraintLeft_toLeftOf="@id/ignore_user_btn"
+        app:layout_constraintRight_toRightOf="@id/ignore_user_btn"
+        app:layout_constraintBottom_toBottomOf="@id/ignore_user_btn"
         />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
