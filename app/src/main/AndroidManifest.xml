@@ -13,6 +13,24 @@
         android:theme="@style/Theme.DTalk"
         tools:targetApi="31">
         <activity
+            android:name=".my_info"
+            android:exported="false" />
+        <activity
+            android:name=".block_list"
+            android:exported="false" />
+        <activity
+            android:name=".withdrawal"
+            android:exported="false" />
+        <activity
+            android:name=".change_ps"
+            android:exported="false" />
+        <activity
+            android:name=".setting"
+            android:exported="false" />
+        <activity
+            android:name=".one_to_many_chat_profile"
+            android:exported="false" />
+        <activity
             android:name=".join_one_to_many_chat"
             android:exported="false">
             <meta-data
