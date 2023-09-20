@@ -13,6 +13,13 @@
         android:theme="@style/Theme.DTalk"
         tools:targetApi="31">
         <activity
+            android:name=".join_one_to_many_chat"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".create_one_to_many_chat"
             android:exported="false" />
         <activity
