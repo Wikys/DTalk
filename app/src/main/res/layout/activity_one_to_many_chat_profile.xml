@@ -35,7 +35,7 @@
         app:layout_constraintBottom_toTopOf="@id/chat_room_admin_profile"
         app:layout_constraintLeft_toLeftOf="@id/background_img"
         app:layout_constraintRight_toRightOf="@id/background_img"
-        app:layout_constraintTop_toBottomOf=""
+
         android:layout_margin="20dp"
         />
     <View

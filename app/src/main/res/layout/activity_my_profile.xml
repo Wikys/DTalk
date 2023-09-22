@@ -9,7 +9,7 @@
         android:id="@+id/edit_profile_background_btn"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background=""
+
         android:src="@drawable/image_icon"
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,7 +20,7 @@
         android:id="@+id/exit_btn"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background=""
+
         android:src="@drawable/x_icon"
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"

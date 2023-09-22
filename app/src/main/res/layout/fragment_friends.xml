@@ -35,7 +35,6 @@
             android:scaleType="centerInside"
             android:layout_gravity="end"
             android:layout_weight="1"
-            android:background=""
 
             />
         <ImageButton
@@ -45,7 +44,6 @@
             android:scaleType="centerCrop"
             android:layout_gravity="end"
             android:layout_weight="1"
-            android:background=""
 
             />
 
@@ -57,7 +55,7 @@
     app:layout_constraintTop_toBottomOf="@id/menu_bar"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintBottom_toTopOf=""
+
     />
     <ImageView
         android:id="@+id/my_profile_img"

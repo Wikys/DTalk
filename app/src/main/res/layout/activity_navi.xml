@@ -34,7 +34,7 @@
             android:layout_weight="1"
             android:src="@drawable/person_icon"
             android:scaleType="centerCrop"
-            android:background=""
+
             />
         <ImageButton
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
             android:layout_weight="1"
             android:src="@drawable/speech_bubble_icon"
             android:scaleType="centerInside"
-            android:background=""
+
             />
         <ImageButton
             android:layout_width="match_parent"
@@ -50,7 +50,7 @@
             android:layout_weight="1"
             android:src="@drawable/speech_bubbles_icon"
             android:scaleType="centerInside"
-            android:background=""
+
 
 
             />
@@ -60,7 +60,7 @@
             android:layout_weight="1"
             android:src="@drawable/settings_icon"
             android:scaleType="centerInside"
-            android:background=""
+
             />
 
     </LinearLayout>
