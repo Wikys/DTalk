@@ -1,9 +1,6 @@
 package com.example.dtalk;
 
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -28,10 +25,10 @@ public class signUp extends AppCompatActivity {
 
     }
 
-    private void sendSMS(String phoneNumber, String message){
-        PendingIntent pi = PendingIntent.getActivity(this,0,
-                new Intent(this,signUp.class), PendingIntent.FLAG_IMMUTABLE);
-        SmsManager sms = SmsManager.getDefaultSmsSubscriptionId();
-
-    }
+//    private void sendSMS(String phoneNumber, String message){
+//        PendingIntent pi = PendingIntent.getActivity(this,0,
+//                new Intent(this,signUp.class), PendingIntent.FLAG_IMMUTABLE);
+//        SmsManager sms = SmsManager.getDefaultSmsSubscriptionId();
+//
+//    }
 }

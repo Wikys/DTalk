@@ -51,12 +51,23 @@
         android:layout_marginTop="20dp"
         />
     <Button
-        android:id="@+id/my_info"
+        android:id="@+id/my_info_btn"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:textSize="20dp"
         android:text="내 정보"
         app:layout_constraintTop_toBottomOf="@id/block_list_manage_btn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="20dp"
+        />
+    <Button
+        android:id="@+id/logout_btn"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:textSize="20dp"
+        android:text="로그아웃"
+        app:layout_constraintTop_toBottomOf="@id/my_info_btn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="20dp"

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927811096662",
+    "project_id": "dtalk-402316",
+    "storage_bucket": "dtalk-402316.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927811096662:android:c4f8ebef8e732f03ec6bf7",
+        "android_client_info": {
+          "package_name": "com.example.dtalk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKIi3bzhov-49yg9IV4m4PCNfpdWd7zi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
