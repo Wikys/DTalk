@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "927811096662",
-    "project_id": "dtalk-402316",
-    "storage_bucket": "dtalk-402316.appspot.com"
+    "project_number": "1029059378363",
+    "project_id": "teamnova-android-d64ad",
+    "storage_bucket": "teamnova-android-d64ad.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:927811096662:android:c4f8ebef8e732f03ec6bf7",
+        "mobilesdk_app_id": "1:1029059378363:android:353ea71523f589919cfd9e",
         "android_client_info": {
           "package_name": "com.example.dtalk"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1029059378363-rgnio0mv4tt6cfbon2or9alscabk0leh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dtalk",
+            "certificate_hash": "51d70b7510608d913c38a8852b21381e17a438c0"
+          }
+        },
+        {
+          "client_id": "1029059378363-7i3kaddgaeo5bn78fkrbanh0217kt34j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDKIi3bzhov-49yg9IV4m4PCNfpdWd7zi8"
+          "current_key": "AIzaSyBkZhUjQgKhmFVP_d1S5P0MG7yhh3P01HM"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029059378363-7i3kaddgaeo5bn78fkrbanh0217kt34j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -139,6 +139,17 @@
         android:layout_marginRight="20dp"
         android:src="@drawable/btn_google_signin_light_normal_web"
         />
+    <Button
+        android:id="@+id/google_sns_logout_btn"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="구글 로그아웃 테스트"
+        android:textSize="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/google_sns_login_btn"
+        />
+
 
 
 

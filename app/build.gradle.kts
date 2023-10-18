@@ -62,5 +62,13 @@ dependencies {
     // Declare the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation ("com.google.firebase:firebase-auth")
+    implementation ("androidx.activity:activity:1.3.0-alpha08")
+    implementation ("androidx.fragment:fragment:1.4.0-alpha01")
+    // Retrofit2
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Gson
+    implementation ("com.google.code.gson:gson:2.10.1")
 
 }
