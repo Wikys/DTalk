@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.dtalk.register.signUp;
+
 public class tos extends AppCompatActivity {
 
 
@@ -27,7 +29,7 @@ public class tos extends AppCompatActivity {
             public void onClick(View view) {
                 //이용약관 체크박스를 누르고 다음 버튼을 눌렀을때
                 if (agree_TOS_checkBox.isChecked()){
-                    Intent intent = new Intent(tos.this,signUp.class);
+                    Intent intent = new Intent(tos.this, signUp.class);
                     startActivity(intent);
 
                 }else{

@@ -5,8 +5,11 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/> <!--자료 관련 요청-->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+
     <!-- INTERNET 퍼미션 추가 -->
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+<!--    <uses-permission android:name="android.permission.SEND_SMS"/>-->
+<!--    <uses-feature android:name="android.hardware.SEND_SMS" android:required="true" />-->
 
 
 
@@ -19,6 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DTalk"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".one_to_many_chat"
@@ -97,7 +101,7 @@
             android:name=".find_id"
             android:exported="false" />
         <activity
-            android:name=".signUp"
+            android:name=".register.signUp"
             android:exported="false" />
         <activity
             android:name=".tos"
