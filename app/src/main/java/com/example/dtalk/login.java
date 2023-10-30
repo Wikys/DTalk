@@ -144,6 +144,10 @@ public class login extends AppCompatActivity {
 
                 Gjoin(new GJoinData(email,password,username));
 
+                //구글 로그인 또는 구글 회원가입을 하면 로그인 토큰 발급후 다음화면으로 넘어감
+                //()
+                //서버에는 아직 로그인토큰 발급 로직이 없음 (추가예정)
+
             }
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.

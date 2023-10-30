@@ -158,13 +158,14 @@
         app:layout_constraintLeft_toLeftOf="@id/phone_number_verifi_group"
         app:layout_constraintRight_toLeftOf="@id/send_certification_btn"
         app:layout_constraintBottom_toTopOf="@id/certification_input"
-        android:hint="휴대폰 번호를\n입력 해주세요."
-        android:gravity="center"
+        android:hint="휴대폰 번호"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
         app:layout_constraintHorizontal_weight="1.5"
+        android:maxLength="11"
+        android:inputType="number"
 
         />
     <Button
@@ -177,7 +178,7 @@
         app:layout_constraintLeft_toRightOf="@id/phone_number_input"
         app:layout_constraintRight_toRightOf="@id/phone_number_verifi_group"
         app:layout_constraintBottom_toTopOf="@id/certification_btn"
-        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintHorizontal_weight="0.9"
         />
     <EditText
         android:id="@+id/certification_input"
@@ -187,13 +188,30 @@
         app:layout_constraintLeft_toLeftOf="@id/phone_number_verifi_group"
         app:layout_constraintRight_toLeftOf="@id/certification_btn"
         app:layout_constraintBottom_toBottomOf="@id/phone_number_verifi_group"
-        android:hint="인증번호를\n입력해주세요."
-        android:gravity="center"
+        android:hint="인증번호"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
         app:layout_constraintHorizontal_weight="1.5"
+        android:enabled="false"
+        android:maxLength="4"
+        android:inputType="number"
+        />
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        app:layout_constraintTop_toTopOf="@id/certification_input"
+        app:layout_constraintRight_toRightOf="@id/certification_input"
+        app:layout_constraintBottom_toBottomOf="@id/certification_input"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:paddingLeft="20dp"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        android:text="5 : 00"
+
         />
     <Button
         android:id="@+id/certification_btn"
@@ -205,7 +223,7 @@
         app:layout_constraintLeft_toRightOf="@id/certification_input"
         app:layout_constraintRight_toRightOf="@id/phone_number_verifi_group"
         app:layout_constraintBottom_toBottomOf="@id/phone_number_verifi_group"
-        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintHorizontal_weight="0.9"
         />
     <Button
         android:id="@+id/signUp_btn"

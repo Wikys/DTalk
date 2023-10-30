@@ -50,14 +50,6 @@ public class information_use extends AppCompatActivity {
         allow_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                //권한 허용 화면 출력
-//                requestPermissions();
-                // 권한 체크한 후에 리턴이 true로 들어오면 로그인 화면 진입
-//                if (permission.checkPermission()) {
-//                    Intent intent = new Intent(information_use.this, login.class);
-//                    startActivity(intent);
-//                    Log.d("권한요청 확인", "permissionCheck: 권한요청 확인 로그인화면 이동");
-//                }
                 PermissionListener permissionListener = new PermissionListener() {
                     //권한 존재하면 넘어가는 메소드
                     @Override
@@ -104,64 +96,3 @@ public class information_use extends AppCompatActivity {
         }
     }
 }
-
-//    private void requestPermissions() {
-//        ActivityCompat.requestPermissions(
-//                this,
-//                permissions,
-//                PERMISSIONS_REQUEST_CODE
-//        );
-//    }
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//
-//        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-//            // 권한 요청 결과 확인
-//            for (int i = 0; i < permissions.length; i++) {
-//                String permission = permissions[i];
-//                int grantResult = grantResults[i];
-//
-//                if (grantResult == PackageManager.PERMISSION_GRANTED) {
-//                    // 권한이 허용된 경우
-//                    Toast.makeText(this, permission + " 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show();
-//
-//                } else {
-//                    // 권한이 거부된 경우
-//                    Toast.makeText(this, permission + " 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        }
-//
-//    }
-
-//    private void requestPermissions() {
-//        // 권한이 이미 허용되었는지 확인
-//        boolean phoneStatePermissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
-//        boolean readStoragePermissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-//        boolean writeStoragePermissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-//
-//        // 이미 허용된 권한은 요청하지 않음
-//        ArrayList<String> permissionsToRequest = new ArrayList<>();
-//        if (!phoneStatePermissionGranted) {
-//            permissionsToRequest.add(Manifest.permission.READ_PHONE_STATE);
-//        }
-//        if (!readStoragePermissionGranted) {
-//            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-//        }
-//        if (!writeStoragePermissionGranted) {
-//            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//        }
-//
-//        // 요청할 권한이 있는 경우에만 요청 다이얼로그 표시
-//        if (!permissionsToRequest.isEmpty()) {
-//            Log.d("확인용", "requestPermissions: 안비어있다"+permissionsToRequest);
-//            ActivityCompat.requestPermissions(
-//                    information_use.this,
-//                    permissionsToRequest.toArray(new String[permissionsToRequest.size()]),
-//                    PERMISSIONS_REQUEST_CODE
-//            );
-//        }
-//
-//    }
-//}
