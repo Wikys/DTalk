@@ -52,6 +52,7 @@ public class SMS_timer {
                                 countText.setText(min+"분 "+sec+"초");
                             }
                         });
+//                        countText.setText(min+"분 "+sec+"초");
 
                     }else {
                         //타이머 종료
