@@ -16,6 +16,7 @@ public class SMS_timer {
     private static TimerTask mt_timer;
     int min;
     int sec;
+    Handler handler;
     Activity ac;
 
     public static Boolean timerRunning = false;
@@ -24,6 +25,7 @@ public class SMS_timer {
     public void timer(TextView countText) { //타이머 생성 메소드
 
         if (m_timer == null || mt_timer == null) {
+            handler = new Handler(Looper.getMainLooper());
             timerRunning = true;
             min = 0;
             sec = 5;
@@ -43,8 +45,14 @@ public class SMS_timer {
                             sec = 59; //초를 다시 59로 설정
                             min--;
                         }
-                        //타이머 업데이트
-                        countText.setText(min+"분 "+sec+"초");
+                        handler.post(new Runnable() { //핸들러
+                            @Override
+                            public void run() {
+                                //타이머 업데이트
+                                countText.setText(min+"분 "+sec+"초");
+                            }
+                        });
+
                     }else {
                         //타이머 종료
                         m_timer.cancel();
