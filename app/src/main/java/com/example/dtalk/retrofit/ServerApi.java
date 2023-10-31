@@ -10,4 +10,7 @@ public interface ServerApi {
 
     @POST("/DTalk/GoogleRegister.php") //구글 회원가입
     Call<GJoinResponse> GUserJoin(@Body GJoinData data);
+
+    @POST("/DTalk/verification_codes.php") //SMS 인증번호 발급
+    Call<SMSVerifiResponse> SMSVerifi(@Body SMSVerifiData data);
 }
