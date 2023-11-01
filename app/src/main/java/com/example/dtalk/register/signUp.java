@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -49,13 +50,15 @@ public class signUp extends AppCompatActivity {
 
     static final int SMS_SEND_PERMISSION = 1;
     private CountDownTimer timer;
-//    private boolean isTimerRunning = false;
+    //    private boolean isTimerRunning = false;
     Handler timerHendler;
     private ServerApi service;
 
     sendSMS sendSMS;
     Boolean SMSVerifi_conn = false;
     SMS_timer SMS_timer;
+    Handler handler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,62 +78,66 @@ public class signUp extends AppCompatActivity {
         sendSMS = new sendSMS();
         //레트로핏 api 객체 생성
         service = RetrofitClient.getClient().create(ServerApi.class);
-        //타이머 객체 생성
-        SMS_timer = new SMS_timer();
         //카운트다운 텍스트뷰
         TextView count = findViewById(R.id.count);
+        //타이머 객체 생성
 
+
+        PermissionListener permissionListener = new PermissionListener() {
+            //권한 존재하면 넘어가는 메소드
+            @Override
+            public void onPermissionGranted() {
+                Log.e("권한", "권한 허가 상태");
+
+
+            }
+
+            //권한이 없으면 실행되는 메소드 (메시지 전송 권한 요청
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(signUp.this, "권한을 허용하셔야 문자 인증이 가능합니다.", Toast.LENGTH_SHORT).show();
+                finish(); //뒤로가기
+                Log.e("권한", "권한 거부 상태");
+            }
+        };
+        TedPermission.create()
+                .setPermissionListener(permissionListener)
+                .setRationaleMessage("권한 허용이 필요합니다.")
+                .setDeniedMessage("권한 허용 거부 시 진행 불가 [설정] > [권한] 에서 권한을 허용 가능합니다.")
+                .setPermissions(Manifest.permission.SEND_SMS)
+                .check();
 
         //인증번호 발송 버튼 클릭 시
         send_certification_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { //문자 보내기 권한 확인
                 Log.d("TAG", "onClick: 눌렸음");
-                PermissionListener permissionListener = new PermissionListener() {
-                    //권한 존재하면 넘어가는 메소드
-                    @Override
-                    public void onPermissionGranted() {
-                        Log.e("권한", "권한 허가 상태");
-                        //문자 보내기 기능 구현
-                        //핸드폰번호 가져오기
-                        String phone_num = phone_number_input.getText().toString();
-                        Log.d("TAG", "onPermissionGranted: " + phone_num.length());
+                //문자 보내기 기능 구현
+                //핸드폰번호 가져오기
+                String phone_num = phone_number_input.getText().toString();
+                //핸드폰번호가 11자리가 아닐시
+                if (phone_num.length() < 11) {
+                    Toast.makeText(signUp.this, "010XXXXXXXX 형식으로 입력 해주세요", Toast.LENGTH_SHORT).show();
 
-                        //핸드폰번호가 11자리가 아닐시
-                        if (phone_num.length() < 11) {
-                            Toast.makeText(signUp.this, "010XXXXXXXX 형식으로 입력 해주세요", Toast.LENGTH_SHORT).show();
+                } else {
+                    phone_number_input.setEnabled(false); //휴대폰번호 입력란 비활성화
+                    certification_input.setEnabled(true); //인증번호 입력란 활성화
 
-                        } else {
-                            phone_number_input.setEnabled(false); //휴대폰번호 입력란 비활성화
-                            certification_input.setEnabled(true); //인증번호 입력란 활성화
+                    //온리스타트에서 시간 서버랑 재통신해서 남은시간 가져와야함
+                    //온 리스타트에서 타이머러닝이 트루면 서버와 재통신해서 남은시간 가져와서 타이머 재실행
 
-                            //온리스타트에서 시간 서버랑 재통신해서 남은시간 가져와야함
-                            //온 리스타트에서 타이머러닝이 트루면 서버와 재통신해서 남은시간 가져와서 타이머 재실행
+                    //서버와 통신
+                    SMSVerifi(new SMSVerifiData(phone_num), phone_num, count);
 
-                            //서버와 통신
-                            SMSVerifi(new SMSVerifiData(phone_num), phone_num,count);
+//                            if(timerRunning){ //서버와 통신후 타이머 시작요청을 알리면
+//                                SMS_timer.timer(count);
+////                                타이머 시작
+//                            }
+//                    SMS_timer.timer(count);
 
-                            if(timerRunning){ //서버와 통신후 타이머 시작요청을 알리면
-                                SMS_timer.timer(count);
-//                                타이머 시작
-                            }
 
-                        }
-                    }
 
-                    //권한이 없으면 실행되는 메소드 (메시지 전송 권한 요청
-                    @Override
-                    public void onPermissionDenied(List<String> deniedPermissions) {
-                        Toast.makeText(signUp.this, "권한을 허용하셔야 앱을 이용 하실수 있습니다.", Toast.LENGTH_SHORT).show();
-                        Log.e("권한", "권한 거부 상태");
-                    }
-                };
-                TedPermission.create()
-                        .setPermissionListener(permissionListener)
-                        .setRationaleMessage("권한 허용이 필요합니다.")
-                        .setDeniedMessage("권한 허용 거부 시 진행 불가 [설정] > [권한] 에서 권한을 허용 가능합니다.")
-                        .setPermissions(Manifest.permission.SEND_SMS)
-                        .check();
+                }
 
 
 
@@ -143,7 +150,8 @@ public class signUp extends AppCompatActivity {
                 //인증번호 카운트다운
                 TextView count = findViewById(R.id.count);
 
-                SMS_timer.timer(count);
+                SMS_timer = new SMS_timer(getMainLooper(),0,5,count);
+                SMS_timer.startTimer();
             }
         });
 
@@ -154,14 +162,44 @@ public class signUp extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d("TAG", "onRestart: 재시작");
+        Log.d("lifeCycle", "onRestart: 재시작");
         if (timerRunning == true) { //타이머가 실행중이었으면
 
         }
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i("lifeCycle", "onStart()");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i("lifeCycle", "onStop()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i("lifeCycle", "onDestroy()");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i("lifeCycle", "onPause()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("lifeCycle", "onResume()");
+    }
 
 
-    private void SMSVerifi(SMSVerifiData data, String phoneNum,TextView countText) {
+
+    private void SMSVerifi(SMSVerifiData data, String phoneNum, TextView countText) {
         service.SMSVerifi(data).enqueue(new Callback<SMSVerifiResponse>() {
             @Override
             public void onResponse(Call<SMSVerifiResponse> call, Response<SMSVerifiResponse> response) {
@@ -172,19 +210,28 @@ public class signUp extends AppCompatActivity {
                 //카운트다운 시작
                 //처음엔 카운트가 5 : 00 임 구분은 timerRunning변수로 첫실행인지 홈화면 갔다가 온건지 구분
 
-                if (result.getMessage().equals("false")){ //인증정보가 이미 존재 할 경우
+                if (result.getMessage().equals("false")) { //인증정보가 이미 존재 할 경우
 
                     Toast.makeText(signUp.this, "조금 뒤에 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
 
-                }else{
-
-                        //인증번호 발송
-                        sendSMS.send(phoneNum, result.getMessage(), signUp.this, signUp.this.getClass());
-                        //발송 후 타이머 시작가능 변수 변경
-                        timerRunning = true;
-
-                        //인증번호 카운트다운
+                } else {
+                    //인증번호 발송
+                    sendSMS.send(phoneNum, result.getMessage(), signUp.this, signUp.this.getClass());
+                    //핸들러에 타이머 작동시키라고 메시지 전송
+//                    Message msg = handler.obtainMessage();
+//                    msg.what = 1;
+//                    timerRunning = true;
+////                    handler.sendMessage(msg);
+//                    msg.sendToTarget();
+//                    if (response.isSuccessful()) { //통신이 성공적으로 완료되면
+//                        //인증번호 카운트다운
 //                        SMS_timer.timer(countText);
+//                    }
+                    if (response.isSuccessful()) {
+                        SMS_timer = new SMS_timer(getMainLooper(), 0, 5, countText);
+                        SMS_timer.startTimer();
+                    }
+
 
                 }
             }
