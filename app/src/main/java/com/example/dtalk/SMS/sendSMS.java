@@ -14,10 +14,10 @@ public class sendSMS {
     int defaultSmsSubscriptionId = SubscriptionManager.getDefaultSmsSubscriptionId();
     public void send(String phoneNumber, String message, Context context, Class<?> targetClass ){
         //클래스 리터럴을 얻기위해 Class<?>사용
-        PendingIntent pi = PendingIntent.getActivity(context,0,
-                new Intent(context, targetClass), PendingIntent.FLAG_IMMUTABLE);
+//        PendingIntent pi = PendingIntent.getActivity(context,0,
+//                new Intent(context, targetClass), PendingIntent.FLAG_IMMUTABLE);
         SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber,null,message,pi,null);
+        sms.sendTextMessage(phoneNumber,null,message,null,null);
         Toast.makeText(context, "메세지가 전송 되었습니다", Toast.LENGTH_SHORT).show();
 
     }

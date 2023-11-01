@@ -125,6 +125,8 @@ public class signUp extends AppCompatActivity {
 
                     //온리스타트에서 시간 서버랑 재통신해서 남은시간 가져와야함
                     //온 리스타트에서 타이머러닝이 트루면 서버와 재통신해서 남은시간 가져와서 타이머 재실행
+//                    SMS_timer = new SMS_timer(getMainLooper(), 0, 5, count);
+//                    SMS_timer.startTimer();
 
                     //서버와 통신
                     SMSVerifi(new SMSVerifiData(phone_num), phone_num, count);
@@ -133,14 +135,8 @@ public class signUp extends AppCompatActivity {
 //                                SMS_timer.timer(count);
 ////                                타이머 시작
 //                            }
-//                    SMS_timer.timer(count);
-
-
 
                 }
-
-
-
             }
         });
 
@@ -217,12 +213,6 @@ public class signUp extends AppCompatActivity {
                 } else {
                     //인증번호 발송
                     sendSMS.send(phoneNum, result.getMessage(), signUp.this, signUp.this.getClass());
-                    //핸들러에 타이머 작동시키라고 메시지 전송
-//                    Message msg = handler.obtainMessage();
-//                    msg.what = 1;
-//                    timerRunning = true;
-////                    handler.sendMessage(msg);
-//                    msg.sendToTarget();
 //                    if (response.isSuccessful()) { //통신이 성공적으로 완료되면
 //                        //인증번호 카운트다운
 //                        SMS_timer.timer(countText);
@@ -231,8 +221,6 @@ public class signUp extends AppCompatActivity {
                         SMS_timer = new SMS_timer(getMainLooper(), 0, 5, countText);
                         SMS_timer.startTimer();
                     }
-
-
                 }
             }
 
