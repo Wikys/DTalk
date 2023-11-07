@@ -10,9 +10,9 @@ public class SMSVerifiResponse {
     private String message;
 
 
-
     public String getMessage() {
         return message;
     }
+
 
 }

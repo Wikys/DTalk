@@ -2,9 +2,12 @@ package com.example.dtalk.retrofit;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface ServerApi {
+    //형태 call 안에 반환 클래스,메소드이름(본인이결정),보낼데이터 DTO클래스
     @POST("/DTalk/GoogleLogin.php") //구글 로그인
     Call<GLoginResponse> GUserLogin(@Body GLoginData data);
 
@@ -13,4 +16,8 @@ public interface ServerApi {
 
     @POST("/DTalk/verification_codes.php") //SMS 인증번호 발급
     Call<SMSVerifiResponse> SMSVerifi(@Body SMSVerifiData data);
+
+    @GET("/DTalk/ID_check.php") //아이디 중복 체크 (정보검색용이라 겟)
+//    Call<IDCheckResponse> IDCheck(@Body IDCheckData data);
+    Call<IDCheckResponse> IDCheck(@Query("userID") String userID );
 }

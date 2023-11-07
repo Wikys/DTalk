@@ -196,7 +196,7 @@ public class login extends AppCompatActivity {
                     // ...
                 });
     }
-    private void Gjoin(GJoinData data){ //구글 회원가입시 디비에 등록하고 메세지를 받아오는 메소드
+    private void Gjoin(GJoinData data){ //구글 회원가입시 디비에 등록하고 메세지를 받아오는 메소드 // 없애고 바꿔야할듯
         service.GUserJoin(data).enqueue(new Callback<GJoinResponse>() {
             @Override
             public void onResponse(Call<GJoinResponse> call, Response<GJoinResponse> response) {

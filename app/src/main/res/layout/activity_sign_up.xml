@@ -22,11 +22,11 @@
         />
     <EditText
         android:id="@+id/input_id"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/id_text"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/id_check"
         app:layout_constraintBottom_toTopOf="@id/ps_text"
         android:hint="아이디를 입력해주세요."
         android:layout_marginLeft="20dp"
@@ -34,6 +34,19 @@
         android:paddingLeft="20dp"
         android:background="@drawable/input_border"
         app:layout_constraintVertical_weight="1"
+        app:layout_constraintHorizontal_weight="2"
+        />
+    <Button
+        android:id="@+id/id_check"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/id_text"
+        app:layout_constraintLeft_toRightOf="@id/input_id"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ps_text"
+        android:text="중복 확인"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintHorizontal_weight="1"
         />
     <TextView
         android:id="@+id/ps_text"
@@ -87,7 +100,7 @@
         app:layout_constraintTop_toBottomOf="@id/ps_confirm"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/nick_text"
+        app:layout_constraintBottom_toTopOf="@id/ps_check_text"
         android:hint="비밀번호를 입력해주세요."
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
@@ -96,10 +109,23 @@
         app:layout_constraintVertical_weight="1"
         />
     <TextView
+        android:id="@+id/ps_check_text"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        android:textSize="20dp"
+        app:layout_constraintTop_toBottomOf="@id/ps_input_confirm"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/nick_text"
+        />
+    <TextView
         android:id="@+id/nick_text"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/ps_input_confirm"
+        app:layout_constraintTop_toBottomOf="@id/ps_check_text"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@id/nick_input"
