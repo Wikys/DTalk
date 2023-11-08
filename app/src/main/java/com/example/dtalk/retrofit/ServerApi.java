@@ -18,6 +18,14 @@ public interface ServerApi {
     Call<SMSVerifiResponse> SMSVerifi(@Body SMSVerifiData data);
 
     @GET("/DTalk/ID_check.php") //아이디 중복 체크 (정보검색용이라 겟)
-//    Call<IDCheckResponse> IDCheck(@Body IDCheckData data);
     Call<IDCheckResponse> IDCheck(@Query("userID") String userID );
+
+    @GET("/DTalk/certification_check.php") //인증번호 체크 (정보검색용이라 겟)
+    Call<certificationCheckResponse> certificationCheck(@Query("certificationNum") String certificationNum,
+                                                        @Query("phone_num") String phone_num);
+
+    @POST("/DTalk/register.php") //일반 회원가입 요청
+    Call<registerResponse> register(@Body registerData data);
+
+
 }

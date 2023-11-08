@@ -62,4 +62,11 @@ public class SMS_timer extends Handler {
             }
         }
     }
+    // 타이머를 정지하고 리소스를 정리하는 메소드
+    public void stopTimer() {
+        timerRunning = false; // 타이머 실행 상태를 false로 설정하여 타이머를 중지
+        removeCallbacksAndMessages(null); // 모든 콜백 및 메시지 제거
+        countText.setVisibility(View.INVISIBLE); // 타이머 텍스트를 화면에서 숨김
+        Log.d("TAG", "stopTimer: 타이머 정지 및 리소스 정리 완료");
+    }
 }

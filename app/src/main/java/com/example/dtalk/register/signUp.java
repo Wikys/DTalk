@@ -5,6 +5,7 @@ import static com.example.dtalk.SMS.SMS_timer.timerRunning;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -29,6 +30,9 @@ import com.example.dtalk.retrofit.RetrofitClient;
 import com.example.dtalk.retrofit.SMSVerifiData;
 import com.example.dtalk.retrofit.SMSVerifiResponse;
 import com.example.dtalk.retrofit.ServerApi;
+import com.example.dtalk.retrofit.certificationCheckResponse;
+import com.example.dtalk.retrofit.registerData;
+import com.example.dtalk.retrofit.registerResponse;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
@@ -52,6 +56,7 @@ public class signUp extends AppCompatActivity {
     Handler handler;
     Boolean idCheckResult;
     Boolean psCheck;
+    Boolean certificationCheck;
 
 
     @Override
@@ -60,7 +65,7 @@ public class signUp extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         //아이디 인풋
-        TextView input_id = (TextView) findViewById(R.id.input_id) ;
+        TextView input_id = (TextView) findViewById(R.id.input_id);
         //인증번호 발송 버튼
         Button send_certification_btn = (Button) signUp.this.findViewById(R.id.send_certification_btn);
         //인증확인 버튼
@@ -89,6 +94,10 @@ public class signUp extends AppCompatActivity {
         EditText ps_input_confirm = (EditText) findViewById(R.id.ps_input_confirm);
         //비밀번호 일치 확인 텍스트뷰
         TextView ps_check_text = (TextView) findViewById(R.id.ps_check_text);
+        //인증번호 인증 확인 변수
+        certificationCheck = false;
+        //닉네임 인풋
+        TextView nick_input = (TextView) findViewById(R.id.nick_input);
 
         PermissionListener permissionListener = new PermissionListener() {
             //권한 존재하면 넘어가는 메소드
@@ -125,23 +134,23 @@ public class signUp extends AppCompatActivity {
                 menu.setIcon(R.mipmap.ic_launcher);
                 menu.setTitle("아이디 중복 확인"); // 제목
                 String userID = input_id.getText().toString();
-                Log.d("TAG", "onClick: "+userID);
+                Log.d("TAG", "onClick: " + userID);
 
-                if (!userID.equals("")){ //아이디에 공백이 있으면안됨
+                if (!userID.equals("")) { //아이디에 공백이 있으면안됨
 
                     //서버에서 아이디 중복 확인후 출력메시지 결정
                     service.IDCheck(userID).enqueue(new Callback<IDCheckResponse>() {
                         @Override
                         public void onResponse(Call<IDCheckResponse> call, Response<IDCheckResponse> response) {
 
-                            if(response.isSuccessful() && response.body() != null){//통신 성공시,반환메시지가 null이 아닐시ㅁㅈ
+                            if (response.isSuccessful() && response.body() != null) {//통신 성공시,반환메시지가 null이 아닐시
                                 IDCheckResponse idCheckResponse = response.body();
                                 String message = idCheckResponse.getMessage(); // 반환된 결과 메시지
                                 int code = idCheckResponse.getCode();
 
                                 // AlertDialog.Builder를 사용하여 사용자에게 메시지를 보여줄 수 있습니다.
                                 menu.setMessage(message);
-                                if (code == 0){ //이미 존재하는 아이디일때
+                                if (code == 0) { //이미 존재하는 아이디일때
                                     menu.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -149,7 +158,7 @@ public class signUp extends AppCompatActivity {
                                         }
                                     });
                                     menu.show();
-                                }else{
+                                } else {
                                     menu.setPositiveButton("사용", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -169,7 +178,7 @@ public class signUp extends AppCompatActivity {
                                     menu.show();
                                 }
 
-                            }else {
+                            } else {
                                 Toast.makeText(signUp.this, "서버 통신 실패", Toast.LENGTH_SHORT).show();
                             }
 
@@ -183,7 +192,7 @@ public class signUp extends AppCompatActivity {
                         }
                     });
 
-                }else{
+                } else {
                     Toast.makeText(signUp.this, "아이디가 공백입니다", Toast.LENGTH_SHORT).show();
                 }
 
@@ -203,7 +212,7 @@ public class signUp extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                checkPassword(input_ps,ps_input_confirm,ps_check_text);
+                checkPassword(input_ps, ps_input_confirm, ps_check_text);
             }
         });
 
@@ -219,7 +228,7 @@ public class signUp extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                checkPassword(input_ps,ps_input_confirm,ps_check_text);
+                checkPassword(input_ps, ps_input_confirm, ps_check_text);
             }
         });
 
@@ -247,36 +256,107 @@ public class signUp extends AppCompatActivity {
 
                     //서버와 통신
                     SMSVerifi(new SMSVerifiData(phone_num), phone_num, count);
-
-//                            if(timerRunning){ //서버와 통신후 타이머 시작요청을 알리면
-//                                SMS_timer.timer(count);
-////                                타이머 시작
-//                            }
-
                 }
             }
         });
-
+        //인증버튼 클릭 시
         certification_btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                //인증번호 카운트다운
-                TextView count = findViewById(R.id.count);
-                SMS_timer = new SMS_timer(getMainLooper(),0,5,count);
-                SMS_timer.startTimer();
+            public void onClick(View v) {
+                String phone_num = phone_number_input.getText().toString(); //휴대폰번호
+                String certificationNum = certification_input.getText().toString(); //인증번호 입력칸
+
+                if(certificationNum.equals("")){ //인증번호 빈칸일시
+                    Toast.makeText(signUp.this, "인증 번호를 입력 해주세요!", Toast.LENGTH_SHORT).show();
+                }else{
+                    //서버와 통신해서 인증번호 검증
+                    service.certificationCheck(certificationNum,phone_num).enqueue(new Callback<certificationCheckResponse>() {
+                        @Override
+                        public void onResponse(Call<certificationCheckResponse> call, Response<certificationCheckResponse> response) {
+
+                            if (response.isSuccessful() && response.body() != null) {//통신 성공시,반환메시지가 null이 아닐시ㅁㅈ
+                                certificationCheckResponse certificationCheckResponse = response.body();
+                                String message = certificationCheckResponse.getMessage(); // 반환된 결과 메시지
+                                int code = certificationCheckResponse.getCode(); //반환된 상태값 0 : 성공, 1 : 실패
+
+                                if (code == 0){
+                                    //인증번호 일치했다는 메시지 출력후 인증번호 발송버튼 인증버튼 가리기
+                                    send_certification_btn.setVisibility(View.GONE); //인증번호 관련버튼 숨김
+                                    certification_btn.setVisibility(View.GONE);
+                                    certification_input.setEnabled(false);
+                                    //인증상태 완료 변수 변경
+                                    certificationCheck = true;
+                                    //타이머 정지
+                                    SMS_timer.stopTimer();
+                                    Toast.makeText(signUp.this, message, Toast.LENGTH_SHORT).show();
+                                }else if (code == 1){
+                                    //인증번호 틀렸다는 메시지
+                                    Toast.makeText(signUp.this, message, Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(signUp.this, message, Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(signUp.this, "서버 통신 실패", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<certificationCheckResponse> call, Throwable t) {
+
+                            Log.d("TAG", "onFailure: 휴대폰 번호 인증 서버 통신 실패");
+
+                        }
+                    });
+                }
+
+            }
+        });
+        signUp_btn.setOnClickListener(new View.OnClickListener() { //회원가입 버튼
+            @Override
+            public void onClick(View v) {
+                //변수 체크하고 정보받아서 디비에 저장
+                //모든 정보가 작성된상태일때
+                if(idCheckResult == true && psCheck == true && !(nick_input.getText().toString().equals("")) && certificationCheck == true){
+                    String userId = input_id.getText().toString();
+                    String userPs = input_ps.getText().toString();
+                    String userNick = nick_input.getText().toString();
+                    String userPhoneNum = phone_number_input.getText().toString();
+
+                    service.register(new registerData(userId,userPs,userNick,userPhoneNum)).enqueue(new Callback<registerResponse>() {
+                        @Override
+                        public void onResponse(Call<registerResponse> call, Response<registerResponse> response) {
+                            registerResponse registerResponse = response.body();
+                            String message = registerResponse.getMessage(); //반환 메시지
+
+                            Toast.makeText(signUp.this, message, Toast.LENGTH_SHORT).show();
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<registerResponse> call, Throwable t) {
+
+                        }
+                    });
+
+                }else{
+                    Toast.makeText(signUp.this, "회원 정보를 작성 해주세요", Toast.LENGTH_SHORT).show();
+                }
+
+
+
             }
         });
     }
+
 
     private void checkPassword(TextView input_ps, TextView ps_input_confirm, TextView ps_check_text) {
 
         String inputPs = input_ps.getText().toString();
         String confirmPs = ps_input_confirm.getText().toString();
 
-        if(inputPs.equals("") || confirmPs.equals("")){ // 둘중 하나라도 값이 없으면 텍스트지우고 변수false
+        if (inputPs.equals("") || confirmPs.equals("")) { // 둘중 하나라도 값이 없으면 텍스트지우고 변수false
             ps_check_text.setText("");
             psCheck = false;
-        }else{
+        } else {
             if (inputPs.equals(confirmPs)) {
                 ps_check_text.setText("비밀번호가 일치합니다.");
                 psCheck = true;
@@ -305,14 +385,14 @@ public class signUp extends AppCompatActivity {
                 } else {
                     //인증번호 발송
                     sendSMS.send(phoneNum, result.getMessage(), signUp.this, signUp.this.getClass());
-//                    if (response.isSuccessful()) { //통신이 성공적으로 완료되면
-//                        //인증번호 카운트다운
-//                        SMS_timer.timer(countText);
-//                    }
-                    if (response.isSuccessful()) {
-                        SMS_timer = new SMS_timer(getMainLooper(), 0, 5, countText);
-                        SMS_timer.startTimer();
-                    }
+                    int count = Integer.parseInt(result.getCount());
+                    //타이머 스타트
+                    SMS_timer = new SMS_timer(getMainLooper(), 0, count, countText);
+                    SMS_timer.startTimer();
+                    //인증코드
+                    String code = result.getMessage(); //인증번호
+                    //타이머 재시작 생명주기에서 만져줘야함
+
                 }
             }
 
@@ -335,6 +415,7 @@ public class signUp extends AppCompatActivity {
 
         }
     }
+
     @Override
     protected void onStart() {
         super.onStart();
