@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.dtalk.R;
 import com.example.dtalk.SMS.SMS_timer;
 import com.example.dtalk.SMS.sendSMS;
+import com.example.dtalk.login;
 import com.example.dtalk.retrofit.IDCheckData;
 import com.example.dtalk.retrofit.IDCheckResponse;
 import com.example.dtalk.retrofit.RetrofitClient;
@@ -246,8 +247,6 @@ public class signUp extends AppCompatActivity {
                     Toast.makeText(signUp.this, "010XXXXXXXX 형식으로 입력 해주세요", Toast.LENGTH_SHORT).show();
 
                 } else {
-                    phone_number_input.setEnabled(false); //휴대폰번호 입력란 비활성화
-                    certification_input.setEnabled(true); //인증번호 입력란 활성화
 
                     //온리스타트에서 시간 서버랑 재통신해서 남은시간 가져와야함
                     //온 리스타트에서 타이머러닝이 트루면 서버와 재통신해서 남은시간 가져와서 타이머 재실행
@@ -327,8 +326,11 @@ public class signUp extends AppCompatActivity {
                             registerResponse registerResponse = response.body();
                             String message = registerResponse.getMessage(); //반환 메시지
 
-                            Toast.makeText(signUp.this, message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(signUp.this, message, Toast.LENGTH_SHORT).show(); //회원가입이 완료되었습니다
 
+                            Intent intent = new Intent(getApplicationContext(), login.class);
+                            startActivity(intent); //로그인 화면으로 이동
+                            finish();	//현재 액티비티 종료
                         }
 
                         @Override
@@ -372,8 +374,6 @@ public class signUp extends AppCompatActivity {
             @Override
             public void onResponse(Call<SMSVerifiResponse> call, Response<SMSVerifiResponse> response) {
                 SMSVerifiResponse result = response.body();
-//                TextView count = findViewById(R.id.count);
-                //onresponse에선 ui업데이트 작업이 안되는것같은데 (ui스레드에서 작동하는 메소드이기때문에 sleep에서 문제가 생기는것같다)
 
                 //카운트다운 시작
                 //처음엔 카운트가 5 : 00 임 구분은 timerRunning변수로 첫실행인지 홈화면 갔다가 온건지 구분
@@ -382,7 +382,16 @@ public class signUp extends AppCompatActivity {
 
                     Toast.makeText(signUp.this, "조금 뒤에 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
 
-                } else {
+                }else if(result.getMessage().equals("fail")){
+                    Toast.makeText(signUp.this, "이미 존재하는 아이디 입니다", Toast.LENGTH_SHORT).show();
+                }else {
+                    //핸드폰 번호 입력칸
+                    EditText phone_number_input = findViewById(R.id.phone_number_input);
+                    //인증번호 입력칸
+                    EditText certification_input = findViewById(R.id.certification_input);
+
+                    phone_number_input.setEnabled(false); //휴대폰번호 입력란 비활성화
+                    certification_input.setEnabled(true); //인증번호 입력란 활성화
                     //인증번호 발송
                     sendSMS.send(phoneNum, result.getMessage(), signUp.this, signUp.this.getClass());
                     int count = Integer.parseInt(result.getCount());

@@ -27,5 +27,8 @@ public interface ServerApi {
     @POST("/DTalk/register.php") //일반 회원가입 요청
     Call<registerResponse> register(@Body registerData data);
 
+    @POST("/DTalk/login.php") //일반 로그인 요청
+    Call<loginResponse> login(@Body loginData data);
+
 
 }

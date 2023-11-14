@@ -67,6 +67,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:hint="비밀번호를 입력해주세요."
+        android:inputType="textPassword"
         />
 
     <View

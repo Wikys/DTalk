@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,9 @@ import com.example.dtalk.retrofit.GJoinData;
 import com.example.dtalk.retrofit.GJoinResponse;
 import com.example.dtalk.retrofit.RetrofitClient;
 import com.example.dtalk.retrofit.ServerApi;
+import com.example.dtalk.retrofit.loginData;
+import com.example.dtalk.retrofit.loginResponse;
+import com.example.dtalk.retrofit.registerResponse;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -38,15 +42,20 @@ public class login extends AppCompatActivity {
     //구글 계정
     private GoogleSignInAccount gsa;
     private ServerApi service;
+    EditText input_id;
+    EditText input_ps;
 
     // 구글api클라이언트
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //아이디 입력칸
+        input_id = (EditText) login.this.findViewById(R.id.input_id);
+        //비밀번호 입력칸
+        input_ps = (EditText) login.this.findViewById(R.id.input_ps);
 
         //레트로핏 api 객체 생성
         service = RetrofitClient.getClient().create(ServerApi.class);
@@ -62,6 +71,45 @@ public class login extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+
+        //로그인 버튼
+        Button login_btn = (Button) login.this.findViewById(R.id.login_btn);
+        login_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {// 로그인 버튼 클릭시
+                String inputId = input_id.getText().toString(); //사용자가 입력한 아이디값
+                String inputPs = input_ps.getText().toString(); //사용자가 입력한 비밀번호 값
+
+                if(!(inputId.equals("")) && !(inputPs.equals(""))){ //아이디 비밀번호칸이 비어있지않을때
+                    //아이디 비밀번호를 가지고 서버와 통신해서 서버에서 확인후 jwt 발급 하고 다음화면으로 넘기기
+                    //jwt는 쉐어드에 저장
+                    //로그인 이후 화면에서는 항상 jwt를 확인해서 유저를 구분함
+                    service.login(new loginData(inputId,inputPs)).enqueue(new Callback<loginResponse>() {
+                        @Override
+                        public void onResponse(Call<loginResponse> call, Response<loginResponse> response) {
+                            loginResponse loginResponse = response.body();
+                            String message = loginResponse.getMessage(); //반환 메시지
+
+                            Log.d("TAG", "onResponse: "+message);
+
+                            Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<loginResponse> call, Throwable t) {
+                            Log.e("TAG", "onFailure: " + t.getMessage());
+
+                        }
+                    });
+
+
+                    
+                }else{// 비어있을떄
+                    Toast.makeText(login.this, "아이디와 비밀번호를 입력 해주세요.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
         Button sign_up_btn = (Button) login.this.findViewById(R.id.signUp_btn);
         //회원가입 버튼
@@ -132,11 +180,8 @@ public class login extends AppCompatActivity {
                 Uri personPhoto = acct.getPhotoUrl();
 
                 Log.d("TAG", "handleSignInResult:personName " + personName);
-//                Log.d("TAG", "handleSignInResult:personGivenName "+personGivenName);
                 Log.d("TAG", "handleSignInResult:personEmail " + personEmail);
                 Log.d("TAG", "handleSignInResult:personId " + personId);
-//                Log.d("TAG", "handleSignInResult:personFamilyName "+personFamilyName);
-//                Log.d("TAG", "handleSignInResult:personPhoto "+personPhoto);
                 String username = personName;
                 String email = personEmail;
                 String password = personId;
