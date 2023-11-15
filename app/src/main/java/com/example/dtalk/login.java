@@ -103,6 +103,9 @@ public class login extends AppCompatActivity {
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("JWT", JWT);
                         editor.commit();
+                        //토큰 재발급 후 메인이동
+                        Intent intent = new Intent(login.this, activity_title.class);
+                        startActivity(intent);
                     }
                     Log.d("TAG", "JWT토큰 onResponse: " + JWTCheckResponse.getUserId());
 
