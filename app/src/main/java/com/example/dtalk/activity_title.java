@@ -14,7 +14,7 @@ public class activity_title extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_title);
 
-        moveMain(1);
+//        moveMain(1);
     }
 
     private void moveMain(int sec) { // 딜레이주는 메소드

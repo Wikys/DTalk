@@ -3,6 +3,7 @@ package com.example.dtalk.retrofit;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -29,6 +30,9 @@ public interface ServerApi {
 
     @POST("/DTalk/login.php") //일반 로그인 요청
     Call<loginResponse> login(@Body loginData data);
+
+    @GET("/DTalk/JWT_check.php") //JWT 체크요청
+    Call<JWTCheckResponse> JWTCheck();
 
 
 }

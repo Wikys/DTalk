@@ -3,6 +3,7 @@ package com.example.dtalk;
 //import static com.example.dtalk.retrofit.RetrofitClient.myServerUrl;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dtalk.retrofit.GJoinData;
 import com.example.dtalk.retrofit.GJoinResponse;
+import com.example.dtalk.retrofit.JWTCheckResponse;
 import com.example.dtalk.retrofit.RetrofitClient;
 import com.example.dtalk.retrofit.ServerApi;
 import com.example.dtalk.retrofit.loginData;
@@ -44,10 +46,12 @@ public class login extends AppCompatActivity {
     private ServerApi service;
     EditText input_id;
     EditText input_ps;
+    private SharedPreferences preferences;
 
     // 구글api클라이언트
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,9 +60,12 @@ public class login extends AppCompatActivity {
         input_id = (EditText) login.this.findViewById(R.id.input_id);
         //비밀번호 입력칸
         input_ps = (EditText) login.this.findViewById(R.id.input_ps);
+        //jwt (MODE_PRIVATE (이 앱에서만 사용가능))
+        preferences = getSharedPreferences("JWT", MODE_PRIVATE);
 
         //레트로핏 api 객체 생성
-        service = RetrofitClient.getClient().create(ServerApi.class);
+        service = RetrofitClient.getClient(preferences).create(ServerApi.class);
+
 
         // 파이어베이스 인증 객체 선언
         mAuth = FirebaseAuth.getInstance();
@@ -71,6 +78,46 @@ public class login extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+        //쉐어드에서 JWT 가져오기
+        String Token = preferences.getString("JWT", ""); // 토큰값 가져오기 없으면 ""
+        if (!(Token.equals(""))) { //토큰이 존재하면
+            //JWT 검증
+            service.JWTCheck().enqueue(new Callback<JWTCheckResponse>() {
+                @Override
+                public void onResponse(Call<JWTCheckResponse> call, Response<JWTCheckResponse> response) {
+                    JWTCheckResponse JWTCheckResponse = response.body();
+
+                    //엑세스토큰이 존재하고 유효할경우 혹은 만료되서 리프레시 토큰으로 재발급 받았을경우
+                    if (JWTCheckResponse.getStatus().equals("certification_valid")) {
+                        //메인이동
+                        Intent intent = new Intent(login.this, activity_title.class);
+                        startActivity(intent);
+
+                    } else if (JWTCheckResponse.getStatus().equals("hacked")) { //비정상적인 접근시
+                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else if (JWTCheckResponse.getStatus().equals("error")) { //에러시
+                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else if (JWTCheckResponse.getStatus().equals("reissuance")) { //엑세스토큰 만료되서 재발급시
+                        String JWT = JWTCheckResponse.getAccessToken();//JWT
+                        //쉐어드에 저장
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("JWT", JWT);
+                        editor.commit();
+                    }
+                    Log.d("TAG", "JWT토큰 onResponse: " + JWTCheckResponse.getUserId());
+
+                    //메인으로 이동 (테스트코드)
+//                    Intent intent = new Intent(login.this,activity_title.class);
+//                    startActivity(intent);
+                }
+
+                @Override
+                public void onFailure(Call<JWTCheckResponse> call, Throwable t) {
+
+                }
+            });
+        }
+
 
         //로그인 버튼
         Button login_btn = (Button) login.this.findViewById(R.id.login_btn);
@@ -80,17 +127,22 @@ public class login extends AppCompatActivity {
                 String inputId = input_id.getText().toString(); //사용자가 입력한 아이디값
                 String inputPs = input_ps.getText().toString(); //사용자가 입력한 비밀번호 값
 
-                if(!(inputId.equals("")) && !(inputPs.equals(""))){ //아이디 비밀번호칸이 비어있지않을때
+                if (!(inputId.equals("")) && !(inputPs.equals(""))) { //아이디 비밀번호칸이 비어있지않을때
                     //아이디 비밀번호를 가지고 서버와 통신해서 서버에서 확인후 jwt 발급 하고 다음화면으로 넘기기
                     //jwt는 쉐어드에 저장
                     //로그인 이후 화면에서는 항상 jwt를 확인해서 유저를 구분함
-                    service.login(new loginData(inputId,inputPs)).enqueue(new Callback<loginResponse>() {
+                    service.login(new loginData(inputId, inputPs)).enqueue(new Callback<loginResponse>() {
                         @Override
                         public void onResponse(Call<loginResponse> call, Response<loginResponse> response) {
                             loginResponse loginResponse = response.body();
                             String message = loginResponse.getMessage(); //반환 메시지
+                            String JWT = loginResponse.getJWT();//JWT
+                            //쉐어드에 저장
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("JWT", JWT);
+                            editor.commit();
 
-                            Log.d("TAG", "onResponse: "+message);
+                            Log.d("TAG", "onResponse: " + message);
 
                             Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
                         }
@@ -103,8 +155,7 @@ public class login extends AppCompatActivity {
                     });
 
 
-                    
-                }else{// 비어있을떄
+                } else {// 비어있을떄
                     Toast.makeText(login.this, "아이디와 비밀번호를 입력 해주세요.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -187,7 +238,7 @@ public class login extends AppCompatActivity {
                 String password = personId;
 //                Log.d("확인용", "handleSignInResult:  "+username+","+email+","+password);
 
-                Gjoin(new GJoinData(email,password,username));
+                Gjoin(new GJoinData(email, password, username));
 
                 //구글 로그인 또는 구글 회원가입을 하면 로그인 토큰 발급후 다음화면으로 넘어감
                 //()
@@ -241,15 +292,17 @@ public class login extends AppCompatActivity {
                     // ...
                 });
     }
-    private void Gjoin(GJoinData data){ //구글 회원가입시 디비에 등록하고 메세지를 받아오는 메소드 // 없애고 바꿔야할듯
+
+    private void Gjoin(GJoinData data) { //구글 회원가입시 디비에 등록하고 메세지를 받아오는 메소드 // 없애고 바꿔야할듯
         service.GUserJoin(data).enqueue(new Callback<GJoinResponse>() {
             @Override
             public void onResponse(Call<GJoinResponse> call, Response<GJoinResponse> response) {
                 GJoinResponse result = response.body();
                 Toast.makeText(login.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d("회원가입 완료 확인용", "onResponse: "+result.getMessage());
+                Log.d("회원가입 완료 확인용", "onResponse: " + result.getMessage());
 
             }
+
             @Override
             public void onFailure(Call<GJoinResponse> call, Throwable t) {
                 Toast.makeText(login.this, "회원가입 에러 발생", Toast.LENGTH_SHORT).show();

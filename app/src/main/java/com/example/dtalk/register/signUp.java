@@ -6,6 +6,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -50,6 +51,7 @@ public class signUp extends AppCompatActivity {
     //    private boolean isTimerRunning = false;
     Handler timerHendler;
     private ServerApi service;
+    private SharedPreferences preferences;
 
     sendSMS sendSMS;
     Boolean SMSVerifi_conn = false;
@@ -64,6 +66,9 @@ public class signUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        //jwt (MODE_PRIVATE (이 앱에서만 사용가능))
+        preferences = getSharedPreferences("JWT", MODE_PRIVATE);
 
         //아이디 인풋
         TextView input_id = (TextView) findViewById(R.id.input_id);
@@ -80,7 +85,7 @@ public class signUp extends AppCompatActivity {
         //smsmanager
         sendSMS = new sendSMS();
         //레트로핏 api 객체 생성
-        service = RetrofitClient.getClient().create(ServerApi.class);
+        service = RetrofitClient.getClient(preferences).create(ServerApi.class);
         //카운트다운 텍스트뷰
         TextView count = (TextView) findViewById(R.id.count);
         //아이디 중복확인 버튼
