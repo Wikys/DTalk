@@ -141,18 +141,24 @@ public class login extends AppCompatActivity {
                         public void onResponse(Call<loginResponse> call, Response<loginResponse> response) {
                             loginResponse loginResponse = response.body();
                             String message = loginResponse.getMessage(); //반환 메시지
-                            String JWT = loginResponse.getJWT();//JWT
-                            //쉐어드에 저장
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("JWT", JWT);
-                            editor.commit();
 
-                            Log.d("TAG", "onResponse: " + message);
+                            if(loginResponse.getStatus().equals("login")){ //로그인 성공시
+                                String JWT = loginResponse.getJWT();//JWT
+                                //쉐어드에 저장
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("JWT", JWT);
+                                editor.commit();
 
-                            Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
-                            //메인이동
-                            Intent intent = new Intent(login.this, activity_title.class);
-                            startActivity(intent);
+                                Log.d("TAG", "onResponse: " + message);
+
+                                Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
+                                //메인이동
+                                Intent intent = new Intent(login.this, activity_title.class);
+                                startActivity(intent);
+                            } else if (loginResponse.getStatus().equals("faild")) { //로그인 실패시
+                                Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
+                            }
+
                         }
 
                         @Override

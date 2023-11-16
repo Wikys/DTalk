@@ -9,6 +9,9 @@ public class loginResponse {
     @SerializedName("message")
     private String message;
 
+    @SerializedName("status")
+    private String status;
+
     @SerializedName("JWT") //토큰
     private String JWT;
 
@@ -20,4 +23,7 @@ public class loginResponse {
         return JWT;
     }
 
+    public String getStatus() {
+        return status;
+    }
 }
