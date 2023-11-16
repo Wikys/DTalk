@@ -108,8 +108,6 @@ public class login extends AppCompatActivity {
                         startActivity(intent);
                     } else if (JWTCheckResponse.getStatus().equals("expired")) { //리프레시토큰 만료시
                         Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                    } else if (JWTCheckResponse.getStatus().equals("invalid")) { //리프레시 토큰이 없는경우
-                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                     Log.d("TAG", "JWT토큰 onResponse: " + JWTCheckResponse.getUserId());
 
@@ -152,6 +150,9 @@ public class login extends AppCompatActivity {
                             Log.d("TAG", "onResponse: " + message);
 
                             Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
+                            //메인이동
+                            Intent intent = new Intent(login.this, activity_title.class);
+                            startActivity(intent);
                         }
 
                         @Override
