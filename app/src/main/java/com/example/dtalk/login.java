@@ -97,7 +97,7 @@ public class login extends AppCompatActivity {
                         Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     } else if (JWTCheckResponse.getStatus().equals("error")) { //에러시
                         Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                    } else if (JWTCheckResponse.getStatus().equals("reissuance")) { //엑세스토큰 만료되서 재발급시
+                    } else if (JWTCheckResponse.getStatus().equals("reissued")) { //엑세스토큰 만료되서 재발급시
                         String JWT = JWTCheckResponse.getAccessToken();//JWT
                         //쉐어드에 저장
                         SharedPreferences.Editor editor = preferences.edit();
@@ -106,6 +106,10 @@ public class login extends AppCompatActivity {
                         //토큰 재발급 후 메인이동
                         Intent intent = new Intent(login.this, activity_title.class);
                         startActivity(intent);
+                    } else if (JWTCheckResponse.getStatus().equals("expired")) { //리프레시토큰 만료시
+                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else if (JWTCheckResponse.getStatus().equals("invalid")) { //리프레시 토큰이 없는경우
+                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                     Log.d("TAG", "JWT토큰 onResponse: " + JWTCheckResponse.getUserId());
 
