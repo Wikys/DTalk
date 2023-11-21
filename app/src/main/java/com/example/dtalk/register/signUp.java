@@ -259,7 +259,7 @@ public class signUp extends AppCompatActivity {
 //                    SMS_timer.startTimer();
 
                     //서버와 통신
-                    SMSVerifi(new SMSVerifiData(phone_num), phone_num, count);
+                    SMSVerifi(new SMSVerifiData(phone_num,"singUp"), phone_num, count);
                 }
             }
         });
@@ -390,10 +390,14 @@ public class signUp extends AppCompatActivity {
                 }else if(result.getMessage().equals("fail")){
                     Toast.makeText(signUp.this, "이미 존재하는 아이디 입니다", Toast.LENGTH_SHORT).show();
                 }else {
+                    //인증확인 버튼
+                    Button certification_btn = (Button) signUp.this.findViewById(R.id.certification_btn);
                     //핸드폰 번호 입력칸
                     EditText phone_number_input = findViewById(R.id.phone_number_input);
                     //인증번호 입력칸
                     EditText certification_input = findViewById(R.id.certification_input);
+                    //인증버튼 활성화
+                    certification_btn.setEnabled(true);
 
                     phone_number_input.setEnabled(false); //휴대폰번호 입력란 비활성화
                     certification_input.setEnabled(true); //인증번호 입력란 활성화
@@ -401,7 +405,7 @@ public class signUp extends AppCompatActivity {
                     sendSMS.send(phoneNum, result.getMessage(), signUp.this, signUp.this.getClass());
                     int count = Integer.parseInt(result.getCount());
                     //타이머 스타트
-                    SMS_timer = new SMS_timer(getMainLooper(), 0, count, countText);
+                    SMS_timer = new SMS_timer(getMainLooper(), 0, count, countText,certification_btn);
                     SMS_timer.startTimer();
                     //인증코드
                     String code = result.getMessage(); //인증번호

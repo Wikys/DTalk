@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,14 +19,16 @@ public class SMS_timer extends Handler {
     int min;
     int sec;
     TextView countText;
+    Button certification_btn;
 
     public static Boolean timerRunning = false;
 
-    public SMS_timer(@NonNull Looper looper, int min, int sec, TextView countText) {
+    public SMS_timer(@NonNull Looper looper, int min, int sec, TextView countText, Button certification_btn) {
         super(looper);
         this.min = min;
         this.sec = sec;
         this.countText = countText;
+        this.certification_btn = certification_btn;
     }
 
     public void startTimer() {
@@ -56,6 +59,8 @@ public class SMS_timer extends Handler {
                     } else {
                         timerRunning = false;
                         countText.setVisibility(View.INVISIBLE);
+                        //인증버튼 가림
+                        certification_btn.setEnabled(false);
                         Log.d("TAG", "handleMessage: 타이머 종료");
                     }
                     break;

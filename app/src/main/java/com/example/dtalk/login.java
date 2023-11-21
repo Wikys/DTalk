@@ -51,6 +51,9 @@ public class login extends AppCompatActivity {
     // 구글api클라이언트
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
+    Button find_id_btn;
+    Button find_ps_btn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +65,11 @@ public class login extends AppCompatActivity {
         input_ps = (EditText) login.this.findViewById(R.id.input_ps);
         //jwt (MODE_PRIVATE (이 앱에서만 사용가능))
         preferences = getSharedPreferences("JWT", MODE_PRIVATE);
+        find_id_btn = (Button) login.this.findViewById(R.id.find_id_btn);
+        find_ps_btn = (Button) login.this.findViewById(R.id.find_ps_btn);
 
         //레트로핏 api 객체 생성
         service = RetrofitClient.getClient(preferences).create(ServerApi.class);
-
 
         // 파이어베이스 인증 객체 선언
         mAuth = FirebaseAuth.getInstance();
@@ -183,6 +187,20 @@ public class login extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(login.this, tos.class);
+                startActivity(intent);
+            }
+        });
+        find_id_btn.setOnClickListener(new View.OnClickListener() { //아이디 찾기 버튼
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(login.this, find_id.class);
+                startActivity(intent);
+            }
+        });
+        find_ps_btn.setOnClickListener(new View.OnClickListener() { //비밀번호 찾기 버튼
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(login.this, find_ps.class);
                 startActivity(intent);
             }
         });

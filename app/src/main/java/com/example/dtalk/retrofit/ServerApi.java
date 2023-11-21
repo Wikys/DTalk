@@ -34,5 +34,8 @@ public interface ServerApi {
     @GET("/DTalk/JWT_check.php") //JWT 체크요청
     Call<JWTCheckResponse> JWTCheck();
 
+    @GET("/DTalk/find_id_result.php") //아이디 찾기 결과 요청
+    Call<findIdResultResponse> findIdResult(@Query("phone_num") String phone_num);
+
 
 }

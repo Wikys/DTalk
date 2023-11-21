@@ -252,6 +252,7 @@
         app:layout_constraintRight_toRightOf="@id/phone_number_verifi_group"
         app:layout_constraintBottom_toBottomOf="@id/phone_number_verifi_group"
         app:layout_constraintHorizontal_weight="0.9"
+        android:enabled="false"
         />
     <Button
         android:id="@+id/signUp_btn"
