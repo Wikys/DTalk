@@ -29,6 +29,7 @@ public class find_id_result extends AppCompatActivity {
     TextView resultText;
     TextView result_guide;
     Button login_btn;
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class find_id_result extends AppCompatActivity {
             public void onResponse(Call<findIdResultResponse> call, Response<findIdResultResponse> response) {
                 findIdResultResponse result = response.body();
                 if(result.getStatus().equals("success")){ //아이디를 찾았을때
-                    String userId = result.getID();
+                    userId = result.getID();
                     resultText.setText(userId);
 
                 } else if (result.getStatus().equals("failure")) { //검색결과가 없을때
@@ -77,6 +78,7 @@ public class find_id_result extends AppCompatActivity {
             public void onClick(View v) {
                 //로그인화면 이동
                 Intent intent = new Intent(find_id_result.this, login.class);
+                intent.putExtra("userId",userId);
                 startActivity(intent);
 
 

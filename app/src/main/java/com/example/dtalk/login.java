@@ -71,6 +71,14 @@ public class login extends AppCompatActivity {
         //레트로핏 api 객체 생성
         service = RetrofitClient.getClient(preferences).create(ServerApi.class);
 
+        Intent idIntent = getIntent();
+        String userId = idIntent.getStringExtra("userId"); //아이디 찾기화면에서 받아온 아이디
+
+        if(userId != null){//인텐트로 받아온 문자열이 존재할때
+            //아이디 입력칸에 자동으로 아이디입력해줌
+            input_id.setText(userId);
+        }
+
         // 파이어베이스 인증 객체 선언
         mAuth = FirebaseAuth.getInstance();
 

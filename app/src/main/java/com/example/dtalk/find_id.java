@@ -83,11 +83,6 @@ public class find_id extends AppCompatActivity {
                             }else if(result.getMessage().equals("fail")){
                                 Toast.makeText(find_id.this, "이미 존재하는 아이디 입니다", Toast.LENGTH_SHORT).show();
                             }else {
-                                //핸드폰 번호 입력칸
-//                                EditText input_phone_number = findViewById(R.id.input_phone_number);
-                                //인증번호 입력칸
-//                                EditText certification_input = findViewById(R.id.certification_input);
-                                //인증확인버튼 활성화
 
                                 input_phone_number.setEnabled(false); //휴대폰번호 입력란 비활성화
                                 certification_input.setEnabled(true); //인증번호 입력란 활성화
