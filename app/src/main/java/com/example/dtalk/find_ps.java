@@ -68,9 +68,10 @@ public class find_ps extends AppCompatActivity {
             public void onClick(View v) {
 
                 String phoneNum = input_phone_number.getText().toString(); //유저 폰번호
+                String userId = input_id.getText().toString();//유저 아이디
                 //서버에서 폰번호 확인절차 들어가야함
-                if(!(phoneNum.equals(""))){//폰번호 입력란이 비어있지 않을때
-                    service.SMSVerifi(new SMSVerifiData(phoneNum,"find")).enqueue(new Callback<SMSVerifiResponse>() { //핸드폰번호를 넣어 서버와 통신시작
+                if(!(phoneNum.equals("")) && !(userId.equals(""))){//폰번호 입력란,아이디 입력란이 비어있지 않을때
+                    service.SMSVerifi(new SMSVerifiData(phoneNum,"findPs",userId)).enqueue(new Callback<SMSVerifiResponse>() { //핸드폰번호를 넣어 서버와 통신시작
                         @Override
                         public void onResponse(Call<SMSVerifiResponse> call, Response<SMSVerifiResponse> response) {
                             SMSVerifiResponse result = response.body();
@@ -102,7 +103,7 @@ public class find_ps extends AppCompatActivity {
                     });
 
                 }else{
-                    Toast.makeText(find_ps.this, "핸드폰 번호를 입력 해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(find_ps.this, "핸드폰번호와 아이디를 작성 해주세요.", Toast.LENGTH_SHORT).show();
                 }
 
             }

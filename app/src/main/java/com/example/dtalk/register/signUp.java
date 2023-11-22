@@ -259,7 +259,7 @@ public class signUp extends AppCompatActivity {
 //                    SMS_timer.startTimer();
 
                     //서버와 통신
-                    SMSVerifi(new SMSVerifiData(phone_num,"singUp"), phone_num, count);
+                    SMSVerifi(new SMSVerifiData(phone_num,"singUp",null), phone_num, count);
                 }
             }
         });

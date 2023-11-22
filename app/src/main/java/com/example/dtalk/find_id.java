@@ -68,7 +68,7 @@ public class find_id extends AppCompatActivity {
                 String phoneNum = input_phone_number.getText().toString(); //유저 폰번호
                 //서버에서 폰번호 확인절차 들어가야함
                 if(!(phoneNum.equals(""))){//폰번호 입력란이 비어있지 않을때
-                    service.SMSVerifi(new SMSVerifiData(phoneNum,"find")).enqueue(new Callback<SMSVerifiResponse>() { //핸드폰번호를 넣어 서버와 통신시작
+                    service.SMSVerifi(new SMSVerifiData(phoneNum,"findId",null)).enqueue(new Callback<SMSVerifiResponse>() { //핸드폰번호를 넣어 서버와 통신시작
                         @Override
                         public void onResponse(Call<SMSVerifiResponse> call, Response<SMSVerifiResponse> response) {
                             SMSVerifiResponse result = response.body();
