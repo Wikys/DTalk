@@ -80,8 +80,6 @@ public class find_id extends AppCompatActivity {
 
                                 Toast.makeText(find_id.this, "조금 뒤에 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
 
-                            }else if(result.getMessage().equals("fail")){
-                                Toast.makeText(find_id.this, "이미 존재하는 아이디 입니다", Toast.LENGTH_SHORT).show();
                             }else {
 
                                 input_phone_number.setEnabled(false); //휴대폰번호 입력란 비활성화
