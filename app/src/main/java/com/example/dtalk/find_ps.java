@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +21,8 @@ import com.example.dtalk.retrofit.SMSVerifiData;
 import com.example.dtalk.retrofit.SMSVerifiResponse;
 import com.example.dtalk.retrofit.ServerApi;
 import com.example.dtalk.retrofit.certificationCheckResponse;
+import com.example.dtalk.retrofit.findPsResultData;
+import com.example.dtalk.retrofit.findPsResultResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +42,12 @@ public class find_ps extends AppCompatActivity {
     Button certification_btn;
     Button next_btn;
     TextView countText;
+    String userId;
+    String phoneNum;
+    Boolean psCheck;
+    TextView input_ps;
+    EditText ps_input_confirm;
+    TextView ps_check_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +60,13 @@ public class find_ps extends AppCompatActivity {
         certification_btn = find_ps.this.findViewById(R.id.certification_btn); //인증번호 인증 버튼
         next_btn = find_ps.this.findViewById(R.id.next_btn); //다음 버튼
         countText = find_ps.this.findViewById(R.id.count); //인증번호 유효시간 카운트다운
+        //비밀번호 인풋
+        input_ps = (TextView) find_ps.this.findViewById(R.id.input_ps);
+        //비밀번호 확인 인풋
+        ps_input_confirm = (EditText) find_ps.this.findViewById(R.id.ps_input_confirm);
+        //비밀번호 일치 확인 텍스트뷰
+        ps_check_text = (TextView) find_ps.this.findViewById(R.id.ps_check_text);
+        psCheck = false;
 
         //smsmanager
         sendSMS = new sendSMS();
@@ -67,8 +84,8 @@ public class find_ps extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String phoneNum = input_phone_number.getText().toString(); //유저 폰번호
-                String userId = input_id.getText().toString();//유저 아이디
+                phoneNum = input_phone_number.getText().toString(); //유저 폰번호
+                userId = input_id.getText().toString();//유저 아이디
                 //서버에서 폰번호 확인절차 들어가야함
                 if(!(phoneNum.equals("")) && !(userId.equals(""))){//폰번호 입력란,아이디 입력란이 비어있지 않을때
                     service.SMSVerifi(new SMSVerifiData(phoneNum,"findPs",userId)).enqueue(new Callback<SMSVerifiResponse>() { //핸드폰번호를 넣어 서버와 통신시작
@@ -83,7 +100,10 @@ public class find_ps extends AppCompatActivity {
 
                                 Toast.makeText(find_ps.this, "조금 뒤에 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
 
-                            }else {
+                            } else if (result.getMessage().equals("fail")) { //인증정보가 잘못입력되었거나 존재하지않을때
+                                Toast.makeText(find_ps.this, "계정 정보가 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+
+                            } else {
 
                                 input_phone_number.setEnabled(false); //휴대폰번호 입력란 비활성화
                                 certification_input.setEnabled(true); //인증번호 입력란 활성화
@@ -159,21 +179,91 @@ public class find_ps extends AppCompatActivity {
 
             }
         });
+        input_ps.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                checkPassword(input_ps, ps_input_confirm, ps_check_text);
+            }
+        });
+
+        ps_input_confirm.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                checkPassword(input_ps, ps_input_confirm, ps_check_text);
+            }
+        });
 
         next_btn.setOnClickListener(new View.OnClickListener() { //결과창 넘어가는 화면
             @Override
             public void onClick(View v) {
                 //모든 정보가 작성된상태일때
-                if(certificationCheck){ //인증을 완료한 상태일때
-                    String phoneNum = input_phone_number.getText().toString(); //유저 폰번호
+                if(certificationCheck && psCheck){ //인증을 완료한 상태일때, 비밀번호 확인이 완료된 상태일때
+                    String userPs = input_ps.getText().toString();
 
-                    Intent intent = new Intent(find_ps.this, find_ps_result.class);
-                    intent.putExtra("phoneNum",phoneNum);
-                    startActivity(intent);
+                    service.findPsResult(new findPsResultData(userId,userPs)).enqueue(new Callback<findPsResultResponse>() { //비밀번호 변경
+                        @Override
+                        public void onResponse(Call<findPsResultResponse> call, Response<findPsResultResponse> response) {
+                            findPsResultResponse result = response.body();
+                            if(result.getStatus().equals("success")){ //성공했을때
+//                                비밀번호를 변경하고
+                                //메인으로 이동
+                                Intent intent = new Intent(find_ps.this, login.class);
+                                startActivity(intent);
 
+                            }else if (result.getStatus().equals("error")) { //서버통신오류
+                                Toast.makeText(find_ps.this, "통신 오류", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<findPsResultResponse> call, Throwable t) {
+
+                        }
+                    });
+
+                }else{
+                    Toast.makeText(find_ps.this, "정보를 입력 해주세요.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+    }
+    private void checkPassword(TextView input_ps, TextView ps_input_confirm, TextView ps_check_text) {
+
+        String inputPs = input_ps.getText().toString();
+        String confirmPs = ps_input_confirm.getText().toString();
+
+        if (inputPs.equals("") || confirmPs.equals("")) { // 둘중 하나라도 값이 없으면 텍스트지우고 변수false
+            ps_check_text.setText("");
+            psCheck = false;
+        } else {
+            if (inputPs.equals(confirmPs)) {
+                ps_check_text.setText("비밀번호가 일치합니다.");
+                psCheck = true;
+            } else {
+                ps_check_text.setText("비밀번호가 일치하지 않습니다.");
+                psCheck = false;
+            }
+        }
     }
 }
