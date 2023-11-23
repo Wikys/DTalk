@@ -76,7 +76,6 @@ public class find_id_result extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //로그인화면 이동
-                Toast.makeText(find_id_result.this, "비밀번호가 성공적으로 변경 되었습니다.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(find_id_result.this, login.class);
                 intent.putExtra("userId",userId);
                 startActivity(intent);
