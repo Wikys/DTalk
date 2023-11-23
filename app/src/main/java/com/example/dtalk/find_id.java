@@ -2,6 +2,7 @@ package com.example.dtalk;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -20,6 +21,10 @@ import com.example.dtalk.retrofit.SMSVerifiData;
 import com.example.dtalk.retrofit.SMSVerifiResponse;
 import com.example.dtalk.retrofit.ServerApi;
 import com.example.dtalk.retrofit.certificationCheckResponse;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.normal.TedPermission;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,6 +66,30 @@ public class find_id extends AppCompatActivity {
         //인증번호 인증 확인 변수
         certificationCheck = false;
 
+        PermissionListener permissionListener = new PermissionListener() {
+            //권한 존재하면 넘어가는 메소드
+            @Override
+            public void onPermissionGranted() {
+                Log.e("권한", "권한 허가 상태");
+
+
+            }
+
+            //권한이 없으면 실행되는 메소드 (메시지 전송 권한 요청
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(find_id.this, "권한을 허용하셔야 문자 인증이 가능합니다.", Toast.LENGTH_SHORT).show();
+                finish(); //뒤로가기
+                Log.e("권한", "권한 거부 상태");
+            }
+        };
+        TedPermission.create()
+                .setPermissionListener(permissionListener)
+                .setRationaleMessage("권한 허용이 필요합니다.")
+                .setDeniedMessage("권한 허용 거부 시 진행 불가 [설정] > [권한] 에서 권한을 허용 가능합니다.")
+                .setPermissions(Manifest.permission.SEND_SMS)
+                .check();
+
 
         send_certification_btn.setOnClickListener(new View.OnClickListener() { //인증번호 발송버튼 클릭시
             @Override
@@ -80,7 +109,10 @@ public class find_id extends AppCompatActivity {
 
                                 Toast.makeText(find_id.this, "조금 뒤에 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
 
-                            }else {
+                            } else if (result.getMessage().equals("fail")) {//인증정보가 잘못입력되었거나 존재하지않을때
+                                Toast.makeText(find_id.this, "해당 번호로 가입 된 계정 정보가 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+
+                            } else {
 
                                 input_phone_number.setEnabled(false); //휴대폰번호 입력란 비활성화
                                 certification_input.setEnabled(true); //인증번호 입력란 활성화
