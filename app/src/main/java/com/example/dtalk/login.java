@@ -102,7 +102,7 @@ public class login extends AppCompatActivity {
                     //엑세스토큰이 존재하고 유효할경우 혹은 만료되서 리프레시 토큰으로 재발급 받았을경우
                     if (JWTCheckResponse.getStatus().equals("certification_valid")) {
                         //메인이동
-                        Intent intent = new Intent(login.this, activity_title.class);
+                        Intent intent = new Intent(login.this, navi.class);
                         startActivity(intent);
 
                     } else if (JWTCheckResponse.getStatus().equals("hacked")) { //비정상적인 접근시
@@ -116,7 +116,7 @@ public class login extends AppCompatActivity {
                         editor.putString("JWT", JWT);
                         editor.commit();
                         //토큰 재발급 후 메인이동
-                        Intent intent = new Intent(login.this, activity_title.class);
+                        Intent intent = new Intent(login.this, navi.class);
                         startActivity(intent);
                     } else if (JWTCheckResponse.getStatus().equals("expired")) { //리프레시토큰 만료시
                         Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
@@ -165,7 +165,7 @@ public class login extends AppCompatActivity {
 
                                 Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
                                 //메인이동
-                                Intent intent = new Intent(login.this, activity_title.class);
+                                Intent intent = new Intent(login.this, navi.class);
                                 startActivity(intent);
                             } else if (loginResponse.getStatus().equals("faild")) { //로그인 실패시
                                 Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();

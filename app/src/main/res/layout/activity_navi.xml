@@ -29,6 +29,7 @@
         android:background="@drawable/background_gray">
         
         <ImageButton
+            android:id="@+id/friends_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -37,6 +38,7 @@
 
             />
         <ImageButton
+            android:id="@+id/one_to_one_chat_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -45,6 +47,7 @@
 
             />
         <ImageButton
+            android:id="@+id/one_to_many_chat_list_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -55,6 +58,7 @@
 
             />
         <ImageButton
+            android:id="@+id/setting_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

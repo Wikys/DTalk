@@ -46,7 +46,7 @@
             android:name=".change_ps"
             android:exported="false" />
         <activity
-            android:name=".setting"
+            android:name=".settings"
             android:exported="false" />
         <activity
             android:name=".one_to_many_chat_profile"
