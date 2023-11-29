@@ -81,7 +81,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".add_friend"
+            android:name=".searchFriend.add_friend"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

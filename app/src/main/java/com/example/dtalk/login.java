@@ -22,6 +22,7 @@ import com.example.dtalk.retrofit.ServerApi;
 import com.example.dtalk.retrofit.loginData;
 import com.example.dtalk.retrofit.loginResponse;
 import com.example.dtalk.retrofit.registerResponse;
+import com.example.dtalk.searchFriend.add_friend;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

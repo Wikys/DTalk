@@ -40,5 +40,15 @@ public interface ServerApi {
     @POST("/DTalk/find_ps_result.php") //비밀번호 찾기 결과 요청
     Call<findPsResultResponse> findPsResult(@Body findPsResultData data);
 
+    @GET("/DTalk/user_information_search.php") //계정정보 불러오기 //스테이터스로 줘야할정보 구분
+    Call<userInformationSearchResponse> userInformationSearch(@Query("userId") String userId,
+                                                                      @Query("status") String status);
+
+    @GET("/DTalk/add_friend_search.php") //아이디 검색(친구추가)
+    Call<addFriendSearchResponse> addFriendSearch(@Query("userId") String userId);
+
+    @POST("/DTalk/add_friend.php") //친구 추가 버튼 클릭했을때 친구추가 요청하는 기능
+    Call<addFriendResponse> addFriend(@Body addFriendData data);
+
 
 }

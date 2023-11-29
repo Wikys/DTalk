@@ -29,6 +29,7 @@
 
             />
         <ImageButton
+            android:id="@+id/search_friend"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:src="@drawable/reading_glasses_icon"
@@ -38,6 +39,7 @@
 
             />
         <ImageButton
+            android:id="@+id/add_friend_btn"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:src="@drawable/plus_button_icon"
@@ -48,15 +50,17 @@
             />
 
     </LinearLayout>
-<View
-    android:id="@+id/my_profile"
-    android:layout_width="0dp"
-    android:layout_height="100dp"
-    app:layout_constraintTop_toBottomOf="@id/menu_bar"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
 
-    />
+    <View
+        android:id="@+id/my_profile"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/menu_bar" />
+
     <ImageView
         android:id="@+id/my_profile_img"
         android:layout_width="80dp"
@@ -72,7 +76,7 @@
         android:id="@+id/my_profile_nick"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:text="안연창"
+        android:text="닉네임"
         app:layout_constraintTop_toTopOf="@id/my_profile"
         app:layout_constraintLeft_toRightOf="@id/my_profile_img"
         app:layout_constraintBottom_toTopOf="@id/my_porfile_msg"
