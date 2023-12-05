@@ -2,6 +2,7 @@ package com.example.dtalk.retrofit;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -49,6 +50,9 @@ public interface ServerApi {
 
     @POST("/DTalk/add_friend.php") //친구 추가 버튼 클릭했을때 친구추가 요청하는 기능
     Call<addFriendResponse> addFriend(@Body addFriendData data);
+
+    @DELETE("/DTalk/logout.php") //로그아웃 버튼 클릭했을때 로그아웃 하는 기능
+    Call<logoutResponse> logout(@Query("userId") String userId);
 
 
 }

@@ -122,7 +122,6 @@ public class login extends AppCompatActivity {
                     } else if (JWTCheckResponse.getStatus().equals("expired")) { //리프레시토큰 만료시
                         Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                    Log.d("TAG", "JWT토큰 onResponse: " + JWTCheckResponse.getUserId());
 
                     //메인으로 이동 (테스트코드)
 //                    Intent intent = new Intent(login.this,activity_title.class);

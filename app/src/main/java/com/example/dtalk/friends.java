@@ -113,6 +113,7 @@ public class friends extends Fragment {
                         JWTLoading = true;
 
                     } else if (JWTCheckResponse.getStatus().equals("hacked")) { //비정상적인 접근시
+                        //비정상적인 접근이라고 메시지 발송
                         Toast.makeText(getActivity(), JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
                         //액티비티 테스크를 전부 지우고 로그인화면으로 이동
                         Intent intent = new Intent(getActivity(), login.class);
@@ -143,7 +144,6 @@ public class friends extends Fragment {
                             @Override
                             public void onResponse(Call<userInformationSearchResponse> call, Response<userInformationSearchResponse> response) {
                                 userInformationSearchResponse result = response.body();
-//                my_profile_img.setImageResource();
 
                                 String statusMsg = result.getUserStatusMsg();
                                 String userNick = result.getUserNick();
