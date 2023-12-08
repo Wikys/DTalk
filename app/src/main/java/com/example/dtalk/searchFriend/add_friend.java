@@ -14,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dtalk.JWTHelper.JWTHelper;
 import com.example.dtalk.R;
 import com.example.dtalk.login;
+import com.example.dtalk.navi;
 import com.example.dtalk.retrofit.JWTCheckResponse;
 import com.example.dtalk.retrofit.RetrofitClient;
 import com.example.dtalk.retrofit.ServerApi;
@@ -101,77 +103,87 @@ public class add_friend extends AppCompatActivity {
         input_friend_id = add_friend.this.findViewById(R.id.input_friend_id); //아이디 입력칸
         search_friend = add_friend.this.findViewById(R.id.search_friend); //아이디 검색 버튼
         search_result = add_friend.this.findViewById(R.id.search_result); //검색후 친구프로필
-
+        JWTHelper JWTHelper = new JWTHelper(add_friend.this);
 
         search_friend.setOnClickListener(new View.OnClickListener() { //검색버튼 클릭시
             @Override
             public void onClick(View v) {
-                String friendId = input_friend_id.getText().toString(); //친구 아이디 입력칸에 써져있는 텍스트
+                JWTHelper.checkJWTAndPerformAction(new JWTHelper.JwtCheckCallback() {
+                    @Override
+                    public void onJwtValid(String userId, String message) {
+                        //토큰 존재시
+                        String friendId = input_friend_id.getText().toString(); //친구 아이디 입력칸에 써져있는 텍스트
 
-                if(userId.equals(friendId)){ //자기아이디를 검색했을때
-                    Toast.makeText(add_friend.this, "나 자신은 검색할 수 없습니다", Toast.LENGTH_SHORT).show();
-                }else{ //타인의 아이디를 검색했을때
-                    service.addFriendSearch(friendId).enqueue(new Callback<addFriendSearchResponse>() {
-                        @Override
-                        public void onResponse(Call<addFriendSearchResponse> call, Response<addFriendSearchResponse> response) {
-                            addFriendSearchResponse addFriendSearchResponse = response.body();
+                        if(userId.equals(friendId)){ //자기아이디를 검색했을때
+                            Toast.makeText(add_friend.this, "나 자신은 검색할 수 없습니다", Toast.LENGTH_SHORT).show();
+                        }else{ //타인의 아이디를 검색했을때
+                            service.addFriendSearch(friendId).enqueue(new Callback<addFriendSearchResponse>() {
+                                @Override
+                                public void onResponse(Call<addFriendSearchResponse> call, Response<addFriendSearchResponse> response) {
+                                    addFriendSearchResponse addFriendSearchResponse = response.body();
 
 
-                            if (addFriendSearchResponse.getSearchResult() == true){ //검색결과가 있을때
-                                search_result.setVisibility(View.VISIBLE);
-                                //나중에 이미지 추가하자
-                                my_profile_nick = add_friend.this.findViewById(R.id.my_profile_nick); //닉네임
-                                my_porfile_msg = add_friend.this.findViewById(R.id.my_porfile_msg);//상태메시지
-                                add_friend_btn = add_friend.this.findViewById(R.id.add_friend_btn); //친구추가 버튼
+                                    if (addFriendSearchResponse.getSearchResult() == true){ //검색결과가 있을때
+                                        search_result.setVisibility(View.VISIBLE);
+                                        //나중에 이미지 추가하자
+                                        my_profile_nick = add_friend.this.findViewById(R.id.my_profile_nick); //닉네임
+                                        my_porfile_msg = add_friend.this.findViewById(R.id.my_porfile_msg);//상태메시지
+                                        add_friend_btn = add_friend.this.findViewById(R.id.add_friend_btn); //친구추가 버튼
 
-                                //유저아이디 여기에있으니까 그거쓰면될듯
-                                String userNick = addFriendSearchResponse.getUserNick();
-                                String userStatusMsg = addFriendSearchResponse.getUserStatusMsg();
-                                my_profile_nick.setText(userNick.toString());
-                                my_porfile_msg.setText(userStatusMsg.toString());
+                                        //유저아이디 여기에있으니까 그거쓰면될듯
+                                        String userNick = addFriendSearchResponse.getUserNick();
+                                        String userStatusMsg = addFriendSearchResponse.getUserStatusMsg();
+                                        my_profile_nick.setText(userNick.toString());
+                                        my_porfile_msg.setText(userStatusMsg.toString());
 
-                                //친구추가 버튼을 누를시 해당 친구와 친구관계를 만들어야함
-                                //그리고 이미 친구관계인 친구는 친구추가시 이미 친구입니다라고 뜨게해야함
-                                add_friend_btn.setOnClickListener(new View.OnClickListener() { //친구추가버튼 클릭시
-                                    @Override
-                                    public void onClick(View v) {
-                                        service.addFriend(new addFriendData(userId,friendId)).enqueue(new Callback<addFriendResponse>() {
+                                        add_friend_btn.setOnClickListener(new View.OnClickListener() { //친구추가버튼 클릭시
                                             @Override
-                                            public void onResponse(Call<addFriendResponse> call, Response<addFriendResponse> response) {
-                                                addFriendResponse addFriendResponse = response.body();
-                                                if(addFriendResponse.getStatus().equals("success")){//친구추가 완료시
-                                                    Toast.makeText(add_friend.this, addFriendResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                            public void onClick(View v) {
+                                                service.addFriend(new addFriendData(userId,friendId)).enqueue(new Callback<addFriendResponse>() {
+                                                    @Override
+                                                    public void onResponse(Call<addFriendResponse> call, Response<addFriendResponse> response) {
+                                                        addFriendResponse addFriendResponse = response.body();
+                                                        if(addFriendResponse.getStatus().equals("success")){//친구추가 완료시
+                                                            Toast.makeText(add_friend.this, addFriendResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
-                                                } else if (addFriendResponse.getStatus().equals("duplication")) { //이미 친구상태일때
-                                                    Toast.makeText(add_friend.this, addFriendResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                                                    
-                                                } else if (addFriendResponse.getStatus().equals("error")) { //데이터가 안넘어왔을때
-                                                    Toast.makeText(add_friend.this, addFriendResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
+                                                        } else if (addFriendResponse.getStatus().equals("duplication")) { //이미 친구상태일때
+                                                            Toast.makeText(add_friend.this, addFriendResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
-                                            @Override
-                                            public void onFailure(Call<addFriendResponse> call, Throwable t) {
+                                                        } else if (addFriendResponse.getStatus().equals("error")) { //데이터가 안넘어왔을때
+                                                            Toast.makeText(add_friend.this, addFriendResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
 
+                                                    @Override
+                                                    public void onFailure(Call<addFriendResponse> call, Throwable t) {
+
+                                                    }
+                                                });
                                             }
                                         });
+
+
+
+                                    }else{ //검색결과가 없을때
+                                        search_result.setVisibility(View.GONE);
+                                        Toast.makeText(add_friend.this, "검색 결과가 없습니다", Toast.LENGTH_SHORT).show();
                                     }
-                                });
+                                }
 
+                                @Override
+                                public void onFailure(Call<addFriendSearchResponse> call, Throwable t) {
 
-
-                            }else{ //검색결과가 없을때
-                                search_result.setVisibility(View.GONE);
-                                Toast.makeText(add_friend.this, "검색 결과가 없습니다", Toast.LENGTH_SHORT).show();
-                            }
+                                }
+                            });
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<addFriendSearchResponse> call, Throwable t) {
+                    @Override
+                    public void onJwtInvalid(String message) {
+                        Toast.makeText(add_friend.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-                        }
-                    });
-                }
 
             }
         });

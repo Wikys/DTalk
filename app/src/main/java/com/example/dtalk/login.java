@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.dtalk.JWTHelper.JWTHelper;
 import com.example.dtalk.retrofit.GJoinData;
 import com.example.dtalk.retrofit.GJoinResponse;
 import com.example.dtalk.retrofit.JWTCheckResponse;
@@ -91,49 +92,24 @@ public class login extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        //쉐어드에서 JWT 가져오기
-        String Token = preferences.getString("JWT", ""); // 토큰값 가져오기 없으면 ""
-        if (!(Token.equals(""))) { //토큰이 존재하면
-            //JWT 검증
-            service.JWTCheck().enqueue(new Callback<JWTCheckResponse>() {
-                @Override
-                public void onResponse(Call<JWTCheckResponse> call, Response<JWTCheckResponse> response) {
-                    JWTCheckResponse JWTCheckResponse = response.body();
 
-                    //엑세스토큰이 존재하고 유효할경우 혹은 만료되서 리프레시 토큰으로 재발급 받았을경우
-                    if (JWTCheckResponse.getStatus().equals("certification_valid")) {
-                        //메인이동
-                        Intent intent = new Intent(login.this, navi.class);
-                        startActivity(intent);
+        JWTHelper JWTHelper = new JWTHelper(login.this);
 
-                    } else if (JWTCheckResponse.getStatus().equals("hacked")) { //비정상적인 접근시
-                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                    } else if (JWTCheckResponse.getStatus().equals("error")) { //에러시
-                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                    } else if (JWTCheckResponse.getStatus().equals("reissued")) { //엑세스토큰 만료되서 재발급시
-                        String JWT = JWTCheckResponse.getAccessToken();//JWT
-                        //쉐어드에 저장
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("JWT", JWT);
-                        editor.commit();
-                        //토큰 재발급 후 메인이동
-                        Intent intent = new Intent(login.this, navi.class);
-                        startActivity(intent);
-                    } else if (JWTCheckResponse.getStatus().equals("expired")) { //리프레시토큰 만료시
-                        Toast.makeText(login.this, JWTCheckResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+        JWTHelper.checkJWTAndPerformAction(new JWTHelper.JwtCheckCallback() {
+            @Override
+            public void onJwtValid(String userId, String message) {
+                //토큰 존재시 메인으로 이동
+//                Log.d("TAG", "onJwtValid: "+message+userId);
+                Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(login.this, navi.class);
+                startActivity(intent);
+            }
 
-                    //메인으로 이동 (테스트코드)
-//                    Intent intent = new Intent(login.this,activity_title.class);
-//                    startActivity(intent);
-                }
-
-                @Override
-                public void onFailure(Call<JWTCheckResponse> call, Throwable t) {
-
-                }
-            });
-        }
+            @Override
+            public void onJwtInvalid(String message) {
+                Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
         //로그인 버튼
