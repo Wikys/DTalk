@@ -135,14 +135,17 @@ public class login extends AppCompatActivity {
                                 //쉐어드에 저장
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.putString("JWT", JWT);
-                                editor.commit();
 
                                 Log.d("TAG", "onResponse: " + message);
 
                                 Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
-                                //메인이동
-                                Intent intent = new Intent(login.this, navi.class);
-                                startActivity(intent);
+                                //커밋 완료되면 메인화면으로 이동
+                                //유저아이디도 넘기기
+                                if(editor.commit()){
+                                    Intent intent = new Intent(login.this, navi.class);
+                                    startActivity(intent);
+                                }
+
                             } else if (loginResponse.getStatus().equals("faild")) { //로그인 실패시
                                 Toast.makeText(login.this, message, Toast.LENGTH_SHORT).show();
                             }
