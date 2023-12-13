@@ -70,5 +70,7 @@ dependencies {
 
     // Gson
     implementation ("com.google.code.gson:gson:2.10.1")
+    //glide
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
 
 }

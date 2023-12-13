@@ -4,7 +4,6 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -53,6 +52,9 @@ public interface ServerApi {
 
     @DELETE("/DTalk/logout.php") //로그아웃 버튼 클릭했을때 로그아웃 하는 기능
     Call<logoutResponse> logout(@Query("userId") String userId);
+
+    @GET("/DTalk/friends_list_check.php") //유저의 친구목록 검색해서 가져오는기능
+    Call<friendsListCheckResponse> friendsListCheck(@Query("userId") String userId);
 
 
 }

@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,11 +20,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dtalk.JWTHelper.JWTHelper;
-import com.example.dtalk.retrofit.JWTCheckResponse;
+import com.example.dtalk.recyclerview.friendsAdapter;
 import com.example.dtalk.retrofit.RetrofitClient;
 import com.example.dtalk.retrofit.ServerApi;
+import com.example.dtalk.retrofit.friendsListCheckResponse;
 import com.example.dtalk.retrofit.userInformationSearchResponse;
 import com.example.dtalk.searchFriend.add_friend;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,6 +56,8 @@ public class friends extends Fragment {
     private TextView my_profile_nick;
     private TextView my_porfile_msg;
     private Boolean JWTLoading = false;
+    private RecyclerView friendList_R;
+
 
 
     public friends() {
@@ -95,6 +104,7 @@ public class friends extends Fragment {
         my_profile_img = view.findViewById(R.id.my_profile_img); //유저 이미지
         my_profile_nick = view.findViewById(R.id.my_profile_nick);//유저 닉네임
         my_porfile_msg = view.findViewById(R.id.my_porfile_msg); //유저 상태 메시지
+        friendList_R = view.findViewById(R.id.friends_profile); //친구목록 리사이클러뷰
 
         JWTHelper JWTHelper = new JWTHelper(getActivity());
 
@@ -122,6 +132,32 @@ public class friends extends Fragment {
 
                     }
                 });
+
+                //친구목록 불러오기
+                //친구수도 변경해줘야함
+                service.friendsListCheck(userId).enqueue(new Callback<friendsListCheckResponse>() {
+                    @Override
+                    public void onResponse(Call<friendsListCheckResponse> call, Response<friendsListCheckResponse> response) {
+                        friendsListCheckResponse result = response.body();
+                        ArrayList<friendsListCheckResponse.Friend> friendsList = new ArrayList<>(result.getFriends());
+
+                        if(result.getStatus().equals("success")){//친구 목록 불러왔을때
+                            friendsAdapter friendsAdapter = new friendsAdapter(friendsList); //어댑터
+                            friendList_R.setLayoutManager(new LinearLayoutManager(getActivity())); // 레이아웃 매니저 설정 (리스트 형태)
+                            friendList_R.setAdapter(friendsAdapter);
+
+                        } else if (result.getStatus().equals("N/A")) { //친구가 없을때
+                            //딱히 작동없음
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<friendsListCheckResponse> call, Throwable t) {
+
+                    }
+                });
+
 
             }
 

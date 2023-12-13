@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="80dp"
     android:orientation="horizontal">
 
     <ImageView
@@ -9,7 +9,8 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:src="@drawable/person_icon"
-        android:layout_weight="1"
+        android:padding="4dp"
+        android:layout_weight="0.7"
         />
     <LinearLayout
         android:layout_width="0dp"
@@ -33,18 +34,11 @@
             android:text="상태 메시지"
             android:gravity="center"
             android:layout_gravity="bottom"
-            android:layout_margin="10dp"
+            android:layout_marginLeft="10dp"
             android:textSize="15sp" />
 
     </LinearLayout>
-    <ImageButton
-        android:id="@+id/add_friend_btn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:scaleType="centerCrop"
-        android:src="@drawable/plus_button_icon"
-        />
+
 
 
 
