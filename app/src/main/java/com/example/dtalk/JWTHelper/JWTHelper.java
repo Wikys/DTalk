@@ -49,7 +49,7 @@ public class JWTHelper {
                             callback.onJwtInvalid(jwtCheckResponse.getMessage());
                         }
                     } else {
-                        callback.onJwtInvalid(jwtCheckResponse.getMessage());
+//                        callback.onJwtInvalid(jwtCheckResponse.getMessage());
                     }
                 }
 

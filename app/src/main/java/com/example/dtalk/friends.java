@@ -27,6 +27,8 @@ import com.example.dtalk.retrofit.friendsListCheckResponse;
 import com.example.dtalk.retrofit.userInformationSearchResponse;
 import com.example.dtalk.searchFriend.add_friend;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +59,7 @@ public class friends extends Fragment {
     private TextView my_porfile_msg;
     private Boolean JWTLoading = false;
     private RecyclerView friendList_R;
+    private TextView number_of_friends;
 
 
 
@@ -105,6 +108,8 @@ public class friends extends Fragment {
         my_profile_nick = view.findViewById(R.id.my_profile_nick);//유저 닉네임
         my_porfile_msg = view.findViewById(R.id.my_porfile_msg); //유저 상태 메시지
         friendList_R = view.findViewById(R.id.friends_profile); //친구목록 리사이클러뷰
+        number_of_friends = view.findViewById(R.id.number_of_friends); //친구수
+
 
         JWTHelper JWTHelper = new JWTHelper(getActivity());
 
@@ -145,6 +150,8 @@ public class friends extends Fragment {
                             friendsAdapter friendsAdapter = new friendsAdapter(friendsList); //어댑터
                             friendList_R.setLayoutManager(new LinearLayoutManager(getActivity())); // 레이아웃 매니저 설정 (리스트 형태)
                             friendList_R.setAdapter(friendsAdapter);
+                            number_of_friends.setText("친구 "+Integer.toString(friendsList.size()));
+
 
                         } else if (result.getStatus().equals("N/A")) { //친구가 없을때
                             //딱히 작동없음
