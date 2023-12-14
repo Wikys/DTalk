@@ -154,7 +154,8 @@ public class friends extends Fragment {
 
 
                         } else if (result.getStatus().equals("N/A")) { //친구가 없을때
-                            //딱히 작동없음
+                            //친구 0명인것만 표기
+                            number_of_friends.setText("친구 "+Integer.toString(friendsList.size()));
                         }
 
                     }
