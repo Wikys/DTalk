@@ -140,6 +140,7 @@
         app:layout_constraintRight_toRightOf="@id/search_result"
         app:layout_constraintBottom_toBottomOf="@id/search_result"
         app:layout_constraintHorizontal_weight="1"
+        android:visibility="gone"
         />
 
 

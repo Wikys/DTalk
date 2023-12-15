@@ -124,17 +124,38 @@ public class add_friend extends AppCompatActivity {
 
 
                                     if (addFriendSearchResponse.getSearchResult() == true){ //검색결과가 있을때
-                                        search_result.setVisibility(View.VISIBLE);
-                                        //나중에 이미지 추가하자
-                                        my_profile_nick = add_friend.this.findViewById(R.id.my_profile_nick); //닉네임
-                                        my_porfile_msg = add_friend.this.findViewById(R.id.my_porfile_msg);//상태메시지
-                                        add_friend_btn = add_friend.this.findViewById(R.id.add_friend_btn); //친구추가 버튼
+                                        if(addFriendSearchResponse.getStatus().equals("success")){ //친구관계가 존재하지않을때
+                                            //나중에 이미지 추가하자
+                                            my_profile_nick = add_friend.this.findViewById(R.id.my_profile_nick); //닉네임
+                                            my_porfile_msg = add_friend.this.findViewById(R.id.my_porfile_msg);//상태메시지
+                                            add_friend_btn = add_friend.this.findViewById(R.id.add_friend_btn); //친구추가 버튼
 
-                                        //유저아이디 여기에있으니까 그거쓰면될듯
-                                        String userNick = addFriendSearchResponse.getUserNick();
-                                        String userStatusMsg = addFriendSearchResponse.getUserStatusMsg();
-                                        my_profile_nick.setText(userNick.toString());
-                                        my_porfile_msg.setText(userStatusMsg.toString());
+                                            search_result.setVisibility(View.VISIBLE);
+                                            add_friend_btn.setVisibility(View.VISIBLE);
+                                            //유저아이디 여기에있으니까 그거쓰면될듯
+                                            String userNick = addFriendSearchResponse.getUserNick();
+                                            String userStatusMsg = addFriendSearchResponse.getUserStatusMsg();
+                                            my_profile_nick.setText(userNick.toString());
+                                            my_porfile_msg.setText(userStatusMsg.toString());
+                                            
+
+                                        } else if (addFriendSearchResponse.getStatus().equals("failed")) {//친구관계가 존재할때
+                                            //나중에 이미지 추가하자
+                                            my_profile_nick = add_friend.this.findViewById(R.id.my_profile_nick); //닉네임
+                                            my_porfile_msg = add_friend.this.findViewById(R.id.my_porfile_msg);//상태메시지
+                                            add_friend_btn = add_friend.this.findViewById(R.id.add_friend_btn); //친구추가 버튼
+                                            //버튼가리기
+                                            search_result.setVisibility(View.VISIBLE);
+                                            add_friend_btn.setVisibility(View.GONE);
+
+                                            //유저아이디 여기에있으니까 그거쓰면될듯
+                                            String userNick = addFriendSearchResponse.getUserNick();
+                                            String userStatusMsg = addFriendSearchResponse.getUserStatusMsg();
+                                            my_profile_nick.setText(userNick.toString());
+                                            my_porfile_msg.setText(userStatusMsg.toString());
+                                            
+                                        }
+
 
                                         add_friend_btn.setOnClickListener(new View.OnClickListener() { //친구추가버튼 클릭시
                                             @Override

@@ -19,6 +19,9 @@ public class addFriendSearchResponse {
     @SerializedName("searchResult")
     private Boolean searchResult;
 
+    @SerializedName("status")
+    private String status;
+
     public String getUserNick() {
         return userNick;
     }
@@ -37,5 +40,9 @@ public class addFriendSearchResponse {
 
     public Boolean getSearchResult() {
         return searchResult;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }
