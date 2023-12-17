@@ -45,7 +45,8 @@ public interface ServerApi {
                                                                       @Query("status") String status);
 
     @GET("/DTalk/add_friend_search.php") //아이디 검색(친구추가)
-    Call<addFriendSearchResponse> addFriendSearch(@Query("userId") String userId);
+    Call<addFriendSearchResponse> addFriendSearch(@Query("userId") String userId,
+                                                  @Query("friendId") String friendId);
 
     @POST("/DTalk/add_friend.php") //친구 추가 버튼 클릭했을때 친구추가 요청하는 기능
     Call<addFriendResponse> addFriend(@Body addFriendData data);

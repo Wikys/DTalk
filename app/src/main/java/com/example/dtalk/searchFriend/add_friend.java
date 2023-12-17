@@ -117,7 +117,7 @@ public class add_friend extends AppCompatActivity {
                         if(userId.equals(friendId)){ //자기아이디를 검색했을때
                             Toast.makeText(add_friend.this, "나 자신은 검색할 수 없습니다", Toast.LENGTH_SHORT).show();
                         }else{ //타인의 아이디를 검색했을때
-                            service.addFriendSearch(friendId).enqueue(new Callback<addFriendSearchResponse>() {
+                            service.addFriendSearch(userId,friendId).enqueue(new Callback<addFriendSearchResponse>() {
                                 @Override
                                 public void onResponse(Call<addFriendSearchResponse> call, Response<addFriendSearchResponse> response) {
                                     addFriendSearchResponse addFriendSearchResponse = response.body();
@@ -129,9 +129,9 @@ public class add_friend extends AppCompatActivity {
                                             my_profile_nick = add_friend.this.findViewById(R.id.my_profile_nick); //닉네임
                                             my_porfile_msg = add_friend.this.findViewById(R.id.my_porfile_msg);//상태메시지
                                             add_friend_btn = add_friend.this.findViewById(R.id.add_friend_btn); //친구추가 버튼
+                                            add_friend_btn.setVisibility(View.VISIBLE);
 
                                             search_result.setVisibility(View.VISIBLE);
-                                            add_friend_btn.setVisibility(View.VISIBLE);
                                             //유저아이디 여기에있으니까 그거쓰면될듯
                                             String userNick = addFriendSearchResponse.getUserNick();
                                             String userStatusMsg = addFriendSearchResponse.getUserStatusMsg();
