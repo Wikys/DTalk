@@ -35,6 +35,9 @@
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:inputType="text"
+        android:maxLines="1"
+        android:imeOptions="actionSearch"
         android:hint="친구 ID 입력"
         />
     <Button

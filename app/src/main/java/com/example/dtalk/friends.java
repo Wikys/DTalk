@@ -1,5 +1,7 @@
 package com.example.dtalk;
 
+import static com.example.dtalk.retrofit.RetrofitClient.BASE_URL;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,15 +12,19 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.dtalk.JWTHelper.JWTHelper;
 import com.example.dtalk.recyclerview.friendsAdapter;
 import com.example.dtalk.retrofit.RetrofitClient;
@@ -60,6 +66,12 @@ public class friends extends Fragment {
     private Boolean JWTLoading = false;
     private RecyclerView friendList_R;
     private TextView number_of_friends;
+    private ImageButton search_friend;
+    private EditText search_friend_input;
+    private Boolean showSearchBar;
+    private ArrayList<friendsListCheckResponse.Friend> originData;
+    private ArrayList<friendsListCheckResponse.Friend> friendsList;
+    private friendsAdapter friendsAdapter;
 
 
 
@@ -109,6 +121,9 @@ public class friends extends Fragment {
         my_porfile_msg = view.findViewById(R.id.my_porfile_msg); //유저 상태 메시지
         friendList_R = view.findViewById(R.id.friends_profile); //친구목록 리사이클러뷰
         number_of_friends = view.findViewById(R.id.number_of_friends); //친구수
+        search_friend = view.findViewById(R.id.search_friend); //친구검색 버튼
+        search_friend_input = view.findViewById(R.id.search_friend_input);//친구 검색인풋
+        showSearchBar = false; // 친구검색바
 
 
         JWTHelper JWTHelper = new JWTHelper(getActivity());
@@ -129,6 +144,11 @@ public class friends extends Fragment {
                         my_profile_nick.setText(userNick); //닉네임 메시지 변경
                         my_porfile_msg.setText(statusMsg); //상태 메시지 변경
                         //이미지 로직 만들고 추가해야함
+                        // Glide를 사용하여 이미지 로딩
+                        Glide.with(getActivity())
+                                .load(BASE_URL+result.getUserProfileImg()) // friend.getImageUrl()는 이미지의 URL 주소
+                                .into(my_profile_img);
+                        Log.d("TAG", "onResponse: "+result.getUserProfileImg());
 
                     }
 
@@ -144,18 +164,19 @@ public class friends extends Fragment {
                     @Override
                     public void onResponse(Call<friendsListCheckResponse> call, Response<friendsListCheckResponse> response) {
                         friendsListCheckResponse result = response.body();
-                        ArrayList<friendsListCheckResponse.Friend> friendsList = new ArrayList<>(result.getFriends());
+                        originData = new ArrayList<>(result.getFriends());
+                        friendsList = new ArrayList<>();
 
                         if(result.getStatus().equals("success")){//친구 목록 불러왔을때
-                            friendsAdapter friendsAdapter = new friendsAdapter(friendsList); //어댑터
+                            friendsAdapter = new friendsAdapter(originData); //어댑터
                             friendList_R.setLayoutManager(new LinearLayoutManager(getActivity())); // 레이아웃 매니저 설정 (리스트 형태)
                             friendList_R.setAdapter(friendsAdapter);
-                            number_of_friends.setText("친구 "+Integer.toString(friendsList.size()));
+                            number_of_friends.setText("친구 "+Integer.toString(originData.size()));
 
 
                         } else if (result.getStatus().equals("N/A")) { //친구가 없을때
                             //친구 0명인것만 표기
-                            number_of_friends.setText("친구 "+Integer.toString(friendsList.size()));
+                            number_of_friends.setText("친구 "+Integer.toString(originData.size()));
                         }
 
                     }
@@ -190,7 +211,58 @@ public class friends extends Fragment {
             }
         });
 
+        search_friend.setOnClickListener(new View.OnClickListener() { //친구검색 버튼 클릭시
+            @Override
+            public void onClick(View v) {
+                if(showSearchBar == false){//서치바가 꺼져있을때
+                    //누르면 검색창 보이게하기
+                    search_friend_input.setVisibility(View.VISIBLE);
+                    showSearchBar = true;
+                }else{
+                    search_friend_input.setVisibility(View.GONE);
+                    search_friend_input.setText(""); //텍스트 비워주고
+                    showSearchBar = false;
+                }
+
+            }
+        });
+
+        search_friend_input.addTextChangedListener(new TextWatcher() { //친구 검색창에 스트링값 들어오면 결과변경
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String searchText = search_friend_input.getText().toString(); //검색창에 들어온값을 스트링으로 형변환
+                searchFilter(searchText);
+
+            }
+        });
+
+
 
         return view;
+    }
+    public void searchFilter(String searchText) {
+
+        friendsList.clear(); //필터 일단 싹비워주고(전에 검색했던기록 안나오게)
+
+        for (int i = 0; i < originData.size(); i++) {
+            //아이템 전체목록 싹 훑어주고
+            if (originData.get(i).getUserName().toLowerCase().contains(searchText.toLowerCase())) {
+
+//                검색창에 써진 텍스트를 포함하는 아이템을 찾아서 다시담아줌
+                friendsList.add(originData.get(i));
+                //아이템필터에 추가
+            }
+        }
+        friendsAdapter.itemfilter(friendsList); // 기존 어레이리스트 교체
     }
 }

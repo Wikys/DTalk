@@ -72,6 +72,11 @@ public class friendsAdapter extends RecyclerView.Adapter<friendsAdapter.ViewHold
                     .into(user_profile_img);
         }
     }
+    public void itemfilter(ArrayList<friendsListCheckResponse.Friend> filterlist) {
+        //여기서 변경내용 데이터에 넣어주고 새로고침
+        data = filterlist;
+        notifyDataSetChanged(); //새로고침
+    }
 
 
 
