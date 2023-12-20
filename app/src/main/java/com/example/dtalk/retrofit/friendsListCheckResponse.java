@@ -4,6 +4,7 @@ package com.example.dtalk.retrofit;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class friendsListCheckResponse {

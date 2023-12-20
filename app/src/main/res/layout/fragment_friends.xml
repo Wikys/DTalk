@@ -72,7 +72,9 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
 
-        app:layout_constraintTop_toBottomOf="@id/menu_bar" />
+        app:layout_constraintTop_toBottomOf="@id/menu_bar"
+        android:clickable="true"
+        android:background="?attr/selectableItemBackground"/>
 
     <ImageView
         android:id="@+id/my_profile_img"

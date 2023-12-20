@@ -5,9 +5,11 @@ import static com.example.dtalk.retrofit.RetrofitClient.BASE_URL;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,6 +74,8 @@ public class friends extends Fragment {
     private ArrayList<friendsListCheckResponse.Friend> originData;
     private ArrayList<friendsListCheckResponse.Friend> friendsList;
     private friendsAdapter friendsAdapter;
+    private View my_profile;
+    String myId;
 
 
 
@@ -106,6 +110,8 @@ public class friends extends Fragment {
         }
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -124,6 +130,7 @@ public class friends extends Fragment {
         search_friend = view.findViewById(R.id.search_friend); //친구검색 버튼
         search_friend_input = view.findViewById(R.id.search_friend_input);//친구 검색인풋
         showSearchBar = false; // 친구검색바
+        my_profile = view.findViewById(R.id.my_profile);//내프로필 버튼
 
 
         JWTHelper JWTHelper = new JWTHelper(getActivity());
@@ -139,6 +146,7 @@ public class friends extends Fragment {
 
                         String statusMsg = result.getUserStatusMsg();
                         String userNick = result.getUserNick();
+                        myId = userId; //내아이디 맴버변수에 저장
                         Log.d("TAG", "상태메시지: "+statusMsg +" 닉네임: "+userNick);
 
                         my_profile_nick.setText(userNick); //닉네임 메시지 변경
@@ -168,7 +176,7 @@ public class friends extends Fragment {
                         friendsList = new ArrayList<>();
 
                         if(result.getStatus().equals("success")){//친구 목록 불러왔을때
-                            friendsAdapter = new friendsAdapter(originData); //어댑터
+                            friendsAdapter = new friendsAdapter(originData,getActivity()); //어댑터
                             friendList_R.setLayoutManager(new LinearLayoutManager(getActivity())); // 레이아웃 매니저 설정 (리스트 형태)
                             friendList_R.setAdapter(friendsAdapter);
                             number_of_friends.setText("친구 "+Integer.toString(originData.size()));
@@ -198,6 +206,15 @@ public class friends extends Fragment {
                 //액티비티 테스크를 전부 지우고 로그인화면으로 이동
                 Intent intent = new Intent(getActivity(), login.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
+                startActivity(intent);
+            }
+        });
+        my_profile.setOnClickListener(new View.OnClickListener() { //내프로필 터치시
+            @Override
+            public void onClick(View v) {
+                //내 프로필 화면으로 이동
+                Intent intent = new Intent(getActivity(), com.example.dtalk.my_profile.class);
+                intent.putExtra("userId",myId);
                 startActivity(intent);
             }
         });
@@ -250,6 +267,12 @@ public class friends extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     public void searchFilter(String searchText) {
 
         friendsList.clear(); //필터 일단 싹비워주고(전에 검색했던기록 안나오게)
