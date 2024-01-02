@@ -98,6 +98,7 @@
         app:layout_constraintRight_toLeftOf="@id/edit_profile_btn"
         app:layout_constraintBottom_toBottomOf="@id/bottom_menu"
         android:clickable="true"
+        android:background="?attr/selectableItemBackground"
         />
     <ImageView
         android:id="@+id/chat_with_me_img"
@@ -123,15 +124,18 @@
         app:layout_constraintBottom_toBottomOf="@id/chat_with_me_btn"
         android:gravity="center"
         />
+
     <View
         android:id="@+id/edit_profile_btn"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="@id/bottom_menu"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_menu"
         app:layout_constraintLeft_toRightOf="@id/chat_with_me_btn"
         app:layout_constraintRight_toRightOf="@id/bottom_menu"
-        app:layout_constraintBottom_toBottomOf="@id/bottom_menu"
-        />
+        app:layout_constraintTop_toTopOf="@id/bottom_menu"
+        app:layout_constraintVertical_bias="0.0"
+        android:background="?attr/selectableItemBackground"/>
+
     <ImageView
         android:id="@+id/edit_profile_img"
         android:layout_width="80dp"

@@ -35,6 +35,8 @@ public class my_profile extends AppCompatActivity {
     private ImageView profile_image;
     private TextView profile_nick;
     private TextView status_message;
+    private View edit_profile_btn;
+
 
 
 
@@ -47,6 +49,8 @@ public class my_profile extends AppCompatActivity {
         profile_image = this.findViewById(R.id.profile_image);//프로필 이미지
         profile_nick = this.findViewById(R.id.profile_nick);//프로필 닉네임
         status_message =this.findViewById(R.id.status_message);//프로필 상태메시지
+        edit_profile_btn = this.findViewById(R.id.edit_profile_btn); // 프로필 편집 버튼
+
 
         //jwt (MODE_PRIVATE (이 앱에서만 사용가능))
         preferences = getSharedPreferences("JWT", MODE_PRIVATE);
@@ -104,7 +108,7 @@ public class my_profile extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        userId = intent.getStringExtra("userId");
+        userId = intent.getStringExtra("userId"); //사용자 아이디 받아옴
         service.userInformationSearch(userId,"myInfo").enqueue(new Callback<userInformationSearchResponse>() {//친구정보 불러오기
             @Override
             public void onResponse(Call<userInformationSearchResponse> call, Response<userInformationSearchResponse> response) {
@@ -129,6 +133,22 @@ public class my_profile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        edit_profile_background_btn.setOnClickListener(new View.OnClickListener() { //배경 변경버튼 클릭시
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        edit_profile_btn.setOnClickListener(new View.OnClickListener() { //프로필 편집버튼 클릭시
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(my_profile.this,edit_profile.class); //프로필 변경화면으로 이동
+                intent.putExtra("userId",userId);
+                startActivity(intent);
             }
         });
 

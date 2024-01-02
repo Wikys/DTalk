@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="edit_profile_image">
+
+        <item >앨범에서 사진 선택</item>
+
+        <item >기본 이미지로 변경</item>
+
+    </string-array>
+
+</resources>
