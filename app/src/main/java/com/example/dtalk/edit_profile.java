@@ -124,9 +124,11 @@ public class edit_profile extends AppCompatActivity {
                             // Glide를 사용하여 이미지 로딩
                             Glide.with(edit_profile.this)
                                     .load(uri) // friend.getImageUrl()는 이미지의 URL 주소
+                                    .override(130, 130)//크기 조절
                                     .into(profile_image);
                         }else{
                             //null이면 이미지변경 취소
+
                         }
 
 
@@ -199,7 +201,10 @@ public class edit_profile extends AppCompatActivity {
                         break;
                     case 1:
                         //기본이미지로 변경 클릭시 프사 기본이미지로 변경
-                        //서버통신 필요할지도
+                        // Glide를 사용하여 이미지 로딩
+                        Glide.with(edit_profile.this)
+                                .load(BASE_URL+"/DTalk/img/default.jpg") // 기본프사
+                                .into(profile_image);
 
 
                         break;
