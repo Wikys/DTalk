@@ -2,12 +2,16 @@ package com.example.dtalk;
 
 import static com.example.dtalk.retrofit.RetrofitClient.BASE_URL;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +43,8 @@ public class edit_profile extends AppCompatActivity {
     private String[] item;
     private AlertDialog btn_dialog;
     private AlertDialog.Builder builder;
+    private ActivityResultLauncher<String> galleryLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,14 +113,35 @@ public class edit_profile extends AppCompatActivity {
         Intent intent = getIntent();
         userId = intent.getStringExtra("userId"); //사용자 아이디 받아옴
 
-        service.userInformationSearch(userId,"myInfo").enqueue(new Callback<userInformationSearchResponse>() {//친구정보 불러오기
+        // ActivityResultLauncher 초기화
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        // 선택한 이미지 처리 코드를 여기에 추가
+                        if (uri != null){ //혹시나 사용자가 x눌렀을떄 예외처리용
+                            // Glide를 사용하여 이미지 로딩
+                            Glide.with(edit_profile.this)
+                                    .load(uri) // friend.getImageUrl()는 이미지의 URL 주소
+                                    .into(profile_image);
+                        }else{
+                            //null이면 이미지변경 취소
+                        }
+
+
+                    }
+                }
+        );
+
+        service.userInformationSearch(userId, "myInfo").enqueue(new Callback<userInformationSearchResponse>() {//친구정보 불러오기
             @Override
             public void onResponse(Call<userInformationSearchResponse> call, Response<userInformationSearchResponse> response) {
                 userInformationSearchResponse result = response.body();
 
                 // Glide를 사용하여 이미지 로딩
                 Glide.with(edit_profile.this)
-                        .load(BASE_URL+result.getUserProfileImg()) // friend.getImageUrl()는 이미지의 URL 주소
+                        .load(BASE_URL + result.getUserProfileImg()) // friend.getImageUrl()는 이미지의 URL 주소
                         .into(profile_image);
                 input_nick.setText(result.getUserNick().toString());
                 input_status_message.setText(result.getUserStatusMsg());
@@ -129,6 +156,7 @@ public class edit_profile extends AppCompatActivity {
         profile_image.setOnClickListener(new View.OnClickListener() { //프로필 이미지 클릭시
             @Override
             public void onClick(View v) {
+                showDialog();//메뉴 다이얼로그 출력
 
             }
         });
@@ -149,10 +177,9 @@ public class edit_profile extends AppCompatActivity {
         });
 
 
-
-
     }
-    private void showDialog(){ //다이얼로그 실행 함수
+
+    private void showDialog() { //다이얼로그 실행 함수
         item = getResources().getStringArray(R.array.edit_profile_image);
         builder = new AlertDialog.Builder(edit_profile.this);
         builder.setTitle("프로필 사진 변경");
@@ -162,10 +189,30 @@ public class edit_profile extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                switch (which) {
+                    case 0:
+                        //프로필 사진 변경 클릭시 앨범출력
+
+
+                        openGallery();
+
+                        break;
+                    case 1:
+                        //기본이미지로 변경 클릭시 프사 기본이미지로 변경
+                        //서버통신 필요할지도
+
+
+                        break;
+                }
+
             }
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+    }
+    // 앨범 열기 메서드
+    private void openGallery() {
+        galleryLauncher.launch("image/*"); // 이미지 선택할 수 있는 앨범 열기
     }
 }
