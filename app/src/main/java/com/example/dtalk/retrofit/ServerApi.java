@@ -1,10 +1,14 @@
 package com.example.dtalk.retrofit;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface ServerApi {
@@ -56,6 +60,13 @@ public interface ServerApi {
 
     @GET("/DTalk/friends_list_check.php") //유저의 친구목록 검색해서 가져오는기능
     Call<friendsListCheckResponse> friendsListCheck(@Query("userId") String userId);
+
+    @Multipart
+    @POST("/DTalk/editProfile.php") //프로필 변경 버튼 눌렀을떄 프로필 변경사항 저장해주는 버튼
+    Call<editProfileResponse> editProfile(@Part MultipartBody.Part profileImg,
+                                          @Part("userNick")RequestBody userNick,
+                                          @Part("userStatus")RequestBody userStatus,
+                                          @Part("sep")RequestBody sep);
 
 
 }

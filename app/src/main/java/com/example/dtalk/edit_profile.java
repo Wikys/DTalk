@@ -11,11 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,8 +27,14 @@ import com.bumptech.glide.Glide;
 import com.example.dtalk.retrofit.JWTCheckResponse;
 import com.example.dtalk.retrofit.RetrofitClient;
 import com.example.dtalk.retrofit.ServerApi;
+import com.example.dtalk.retrofit.editProfileResponse;
 import com.example.dtalk.retrofit.userInformationSearchResponse;
 
+import java.io.File;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,6 +52,8 @@ public class edit_profile extends AppCompatActivity {
     private AlertDialog btn_dialog;
     private AlertDialog.Builder builder;
     private ActivityResultLauncher<String> galleryLauncher;
+    private Uri userProfileImgPath;
+    private String cSep;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +136,9 @@ public class edit_profile extends AppCompatActivity {
                                     .load(uri) // friend.getImageUrl()는 이미지의 URL 주소
                                     .override(130, 130)//크기 조절
                                     .into(profile_image);
+
+                            userProfileImgPath = Uri.parse(getRealPathFromURI(uri)); //이미지 경로 담아줌(변경버튼 눌렀을때 서버에 넘겨주기위해)
+                            cSep = "changeProfileImg"; //이미지 변경이라고 구분자로 서버에 알려줌
                         }else{
                             //null이면 이미지변경 취소
 
@@ -147,6 +160,7 @@ public class edit_profile extends AppCompatActivity {
                         .into(profile_image);
                 input_nick.setText(result.getUserNick().toString());
                 input_status_message.setText(result.getUserStatusMsg());
+//                userProfileImg
 
             }
 
@@ -168,6 +182,63 @@ public class edit_profile extends AppCompatActivity {
             public void onClick(View v) {
                 //메인으로 이동하는데 만약에 채팅방에서 들어온거일수도 있으니까
                 //나중에 이프문 만들어서 어디로 들어왔냐에따라 구분해서 인텐트 바꿔야할듯?
+
+                // 서버로 전송할 닉네임과 상태 메시지
+                RequestBody userNick = RequestBody.create(MediaType.parse("text/plain"), input_nick.getText().toString());
+                RequestBody userStatus = RequestBody.create(MediaType.parse("text/plain"), input_status_message.getText().toString());
+
+
+                if(userNick.equals("")){//유저가 닉네임을 아무것도 안쓰고 저장했을때
+                    Toast.makeText(edit_profile.this, "닉네임은 반드시 입력하셔야 합니다.", Toast.LENGTH_SHORT).show();
+
+                }else{
+                    //서버통신
+                    if(cSep == null){ //사용자가 이미지를 변경하지 않았으면
+
+                        RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), "noChangesToImg");
+
+                        File Img = new File(userProfileImgPath.toString());
+                        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(userProfileImgPath.toString());
+                        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), Img);
+                        MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image." + fileExtension, requestBody);
+
+                        service.editProfile(userProfileImg,userNick,userStatus,sep).enqueue(new Callback<editProfileResponse>() {
+                            @Override
+                            public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<editProfileResponse> call, Throwable t) {
+
+                            }
+                        });
+
+                    }else{//이미지를 변경하고 저장을 눌렀으면
+                        File Img = new File(userProfileImgPath.toString());
+                        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(userProfileImgPath.toString());
+                        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), Img);
+                        MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image." + fileExtension, requestBody);
+
+                        RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), cSep); //상태
+
+                        service.editProfile(userProfileImg,userNick,userStatus,sep).enqueue(new Callback<editProfileResponse>() {
+                            @Override
+                            public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<editProfileResponse> call, Throwable t) {
+
+                            }
+                        });
+
+
+                    }
+                }
             }
         });
 
@@ -206,6 +277,8 @@ public class edit_profile extends AppCompatActivity {
                                 .load(BASE_URL+"/DTalk/img/default.jpg") // 기본프사
                                 .into(profile_image);
 
+                        cSep = "defaultProfileImg"; //기본이미지로 변경했다고 서버에 알려주는용도
+
 
                         break;
                 }
@@ -219,5 +292,17 @@ public class edit_profile extends AppCompatActivity {
     // 앨범 열기 메서드
     private void openGallery() {
         galleryLauncher.launch("image/*"); // 이미지 선택할 수 있는 앨범 열기
+    }
+    public String getRealPathFromURI(Uri contentUri) { //content:// 형식의 로컬주소 실제주소로 변경해주는 메소드
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
+        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String filePath = cursor.getString(columnIndex);
+        cursor.close();
+        return filePath;
     }
 }
