@@ -66,7 +66,8 @@ public interface ServerApi {
     Call<editProfileResponse> editProfile(@Part MultipartBody.Part profileImg,
                                           @Part("userNick")RequestBody userNick,
                                           @Part("userStatus")RequestBody userStatus,
-                                          @Part("sep")RequestBody sep);
+                                          @Part("sep")RequestBody sep,
+                                          @Part("userId")RequestBody userId);
 
 
 }

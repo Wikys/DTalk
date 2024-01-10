@@ -19,6 +19,7 @@
         android:scaleType="fitXY"
         android:layout_margin="20dp"
         android:clickable="true"
+        android:maxLength="20"
         />
     <ImageView
         android:layout_width="40dp"
@@ -40,6 +41,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@id/input_status_message"
         android:layout_margin="20dp"
+        android:maxLength="8"
         />
     <EditText
         android:id="@+id/input_status_message"

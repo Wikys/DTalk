@@ -154,13 +154,18 @@ public class edit_profile extends AppCompatActivity {
             public void onResponse(Call<userInformationSearchResponse> call, Response<userInformationSearchResponse> response) {
                 userInformationSearchResponse result = response.body();
 
+                //이미지 변경시 캐시된 이전 이미지를 사용하는 경우 방지하기위해 랜덤 쿼리 매개변수를 먹여줌
+                String imageUrl = BASE_URL+result.getUserProfileImg();
+                String imageUrlWithRandomQuery = imageUrl + "?timestamp=" + System.currentTimeMillis();
+
                 // Glide를 사용하여 이미지 로딩
                 Glide.with(edit_profile.this)
-                        .load(BASE_URL + result.getUserProfileImg()) // friend.getImageUrl()는 이미지의 URL 주소
+                        .load(imageUrlWithRandomQuery) // friend.getImageUrl()는 이미지의 URL 주소
                         .into(profile_image);
+
                 input_nick.setText(result.getUserNick().toString());
                 input_status_message.setText(result.getUserStatusMsg());
-//                userProfileImg
+
 
             }
 
@@ -186,6 +191,7 @@ public class edit_profile extends AppCompatActivity {
                 // 서버로 전송할 닉네임과 상태 메시지
                 RequestBody userNick = RequestBody.create(MediaType.parse("text/plain"), input_nick.getText().toString());
                 RequestBody userStatus = RequestBody.create(MediaType.parse("text/plain"), input_status_message.getText().toString());
+                RequestBody getUserId = RequestBody.create(MediaType.parse("text/plain"), userId);
 
 
                 if(userNick.equals("")){//유저가 닉네임을 아무것도 안쓰고 저장했을때
@@ -203,7 +209,7 @@ public class edit_profile extends AppCompatActivity {
                         RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), Img);
                         MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image." + fileExtension, requestBody);
 
-                        service.editProfile(userProfileImg,userNick,userStatus,sep).enqueue(new Callback<editProfileResponse>() {
+                        service.editProfile(userProfileImg,userNick,userStatus,sep,getUserId).enqueue(new Callback<editProfileResponse>() {
                             @Override
                             public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
 
@@ -224,9 +230,22 @@ public class edit_profile extends AppCompatActivity {
 
                         RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), cSep); //상태
 
-                        service.editProfile(userProfileImg,userNick,userStatus,sep).enqueue(new Callback<editProfileResponse>() {
+                        service.editProfile(userProfileImg,userNick,userStatus,sep,getUserId).enqueue(new Callback<editProfileResponse>() {
                             @Override
                             public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
+                                editProfileResponse editProfileResponse = response.body();
+                                if (editProfileResponse.getStatus().equals("success")){ //변경 성공시
+                                    Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(edit_profile.this, my_profile.class);
+                                    intent.putExtra("userId",userId);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
+                                    startActivity(intent); //내프로필 화면으로 넘어감
+
+
+                                } else if (editProfileResponse.getStatus().equals("error")) { //이미지가 아닌파일로 시도했을때
+                                    Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
 
                             }
 
@@ -276,6 +295,7 @@ public class edit_profile extends AppCompatActivity {
                         Glide.with(edit_profile.this)
                                 .load(BASE_URL+"/DTalk/img/default.jpg") // 기본프사
                                 .into(profile_image);
+
 
                         cSep = "defaultProfileImg"; //기본이미지로 변경했다고 서버에 알려주는용도
 

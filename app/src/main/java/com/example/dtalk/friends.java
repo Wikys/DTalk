@@ -151,12 +151,16 @@ public class friends extends Fragment {
 
                         my_profile_nick.setText(userNick); //닉네임 메시지 변경
                         my_porfile_msg.setText(statusMsg); //상태 메시지 변경
-                        //이미지 로직 만들고 추가해야함
+
+                        //이미지 변경시 캐시된 이전 이미지를 사용하는 경우 방지하기위해 랜덤 쿼리 매개변수를 먹여줌
+                        String imageUrl = BASE_URL+result.getUserProfileImg();
+                        String imageUrlWithRandomQuery = imageUrl + "?timestamp=" + System.currentTimeMillis();
+
+
                         // Glide를 사용하여 이미지 로딩
-                        Glide.with(getActivity())
-                                .load(BASE_URL+result.getUserProfileImg()) // friend.getImageUrl()는 이미지의 URL 주소
+                        Glide.with(friends.this)
+                                .load(imageUrlWithRandomQuery) // friend.getImageUrl()는 이미지의 URL 주소
                                 .into(my_profile_img);
-                        Log.d("TAG", "onResponse: "+result.getUserProfileImg());
 
                     }
 
@@ -274,18 +278,20 @@ public class friends extends Fragment {
     }
 
     public void searchFilter(String searchText) {
+        if(!(friendsList == null)){
+            friendsList.clear(); //필터 일단 싹비워주고(전에 검색했던기록 안나오게)
 
-        friendsList.clear(); //필터 일단 싹비워주고(전에 검색했던기록 안나오게)
-
-        for (int i = 0; i < originData.size(); i++) {
-            //아이템 전체목록 싹 훑어주고
-            if (originData.get(i).getUserName().toLowerCase().contains(searchText.toLowerCase())) {
+            for (int i = 0; i < originData.size(); i++) {
+                //아이템 전체목록 싹 훑어주고
+                if (originData.get(i).getUserName().toLowerCase().contains(searchText.toLowerCase())) {
 
 //                검색창에 써진 텍스트를 포함하는 아이템을 찾아서 다시담아줌
-                friendsList.add(originData.get(i));
-                //아이템필터에 추가
+                    friendsList.add(originData.get(i));
+                    //아이템필터에 추가
+                }
             }
+            friendsAdapter.itemfilter(friendsList); // 기존 어레이리스트 교체
         }
-        friendsAdapter.itemfilter(friendsList); // 기존 어레이리스트 교체
+
     }
 }

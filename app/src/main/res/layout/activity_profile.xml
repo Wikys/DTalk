@@ -27,14 +27,16 @@
         />
     <ImageView
         android:id="@+id/profile_image"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:src="@drawable/person_icon"
         app:layout_constraintTop_toTopOf="@id/profile"
         app:layout_constraintLeft_toLeftOf="@id/profile"
         app:layout_constraintRight_toRightOf="@id/profile"
         app:layout_constraintBottom_toTopOf="@id/profile_nick"
         app:layout_constraintVertical_weight="3"
+        android:scaleType="fitXY"
+        android:clickable="true"
         />
     <TextView
         android:id="@+id/profile_nick"

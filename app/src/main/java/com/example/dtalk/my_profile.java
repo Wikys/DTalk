@@ -114,10 +114,16 @@ public class my_profile extends AppCompatActivity {
             public void onResponse(Call<userInformationSearchResponse> call, Response<userInformationSearchResponse> response) {
                 userInformationSearchResponse result = response.body();
 
+                //이미지 변경시 캐시된 이전 이미지를 사용하는 경우 방지하기위해 랜덤 쿼리 매개변수를 먹여줌
+                String imageUrl = BASE_URL+result.getUserProfileImg();
+                String imageUrlWithRandomQuery = imageUrl + "?timestamp=" + System.currentTimeMillis();
+
+
                 // Glide를 사용하여 이미지 로딩
                 Glide.with(my_profile.this)
-                        .load(BASE_URL+result.getUserProfileImg()) // friend.getImageUrl()는 이미지의 URL 주소
+                        .load(imageUrlWithRandomQuery) // friend.getImageUrl()는 이미지의 URL 주소
                         .into(profile_image);
+                Log.d("TAG", "onResponse: "+BASE_URL+result.getUserProfileImg());
                 profile_nick.setText(result.getUserNick().toString());
                 status_message.setText(result.getUserStatusMsg());
 
@@ -132,7 +138,9 @@ public class my_profile extends AppCompatActivity {
         exit_btn.setOnClickListener(new View.OnClickListener() { //종료버튼 클릭시
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                Intent intent = new Intent(my_profile.this, friends.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
+                startActivity(intent); //내프로필 화면으로 넘어감
             }
         });
 
