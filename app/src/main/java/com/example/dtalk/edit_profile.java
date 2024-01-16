@@ -158,10 +158,14 @@ public class edit_profile extends AppCompatActivity {
                 String imageUrl = BASE_URL+result.getUserProfileImg();
                 String imageUrlWithRandomQuery = imageUrl + "?timestamp=" + System.currentTimeMillis();
 
+                Uri uri = Uri.parse(imageUrl);
+
                 // Glide를 사용하여 이미지 로딩
                 Glide.with(edit_profile.this)
                         .load(imageUrlWithRandomQuery) // friend.getImageUrl()는 이미지의 URL 주소
                         .into(profile_image);
+
+//                userProfileImgPath = Uri.parse(getRealPathFromURI(uri)); //이미지 경로 담아줌(변경버튼 눌렀을때 서버에 넘겨주기위해)
 
                 input_nick.setText(result.getUserNick().toString());
                 input_status_message.setText(result.getUserStatusMsg());
@@ -203,16 +207,28 @@ public class edit_profile extends AppCompatActivity {
 
                         RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), "noChangesToImg");
 
-                        File Img = new File(userProfileImgPath.toString());
-                        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(userProfileImgPath.toString());
-                        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
-                        RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), Img);
-                        MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image." + fileExtension, requestBody);
+//                        File Img = new File(userProfileImgPath.toString());
+//                        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(userProfileImgPath.toString());
+//                        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+//                        RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), Img);
+//                        MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image." + fileExtension, requestBody);
+                        MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image.");
 
                         service.editProfile(userProfileImg,userNick,userStatus,sep,getUserId).enqueue(new Callback<editProfileResponse>() {
                             @Override
                             public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
+                                editProfileResponse editProfileResponse = response.body();
+                                if (editProfileResponse.getStatus().equals("success")){ //변경 성공시
+                                    Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(edit_profile.this, my_profile.class);
+                                    intent.putExtra("userId",userId);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
+                                    startActivity(intent); //내프로필 화면으로 넘어감
 
+
+                                } else if (editProfileResponse.getStatus().equals("error")) { //이미지가 아닌파일로 시도했을때
+                                    Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
                             }
 
                             @Override
@@ -221,7 +237,7 @@ public class edit_profile extends AppCompatActivity {
                             }
                         });
 
-                    }else{//이미지를 변경하고 저장을 눌렀으면
+                    }else if(cSep.equals("changeProfileImg")){//이미지를 변경하고 저장을 눌렀으면
                         File Img = new File(userProfileImgPath.toString());
                         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(userProfileImgPath.toString());
                         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
@@ -245,8 +261,31 @@ public class edit_profile extends AppCompatActivity {
                                 } else if (editProfileResponse.getStatus().equals("error")) { //이미지가 아닌파일로 시도했을때
                                     Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
+                            }
+                            @Override
+                            public void onFailure(Call<editProfileResponse> call, Throwable t) {
+                            }
+                        });
+                    } else if (cSep.equals("defaultProfileImg")) { //기본이미지로 변경 눌렀을시
+
+                        RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), "defaultProfileImg");
+                        MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image.");
+
+                        service.editProfile(userProfileImg,userNick,userStatus,sep,getUserId).enqueue(new Callback<editProfileResponse>() {
+                            @Override
+                            public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
+                                editProfileResponse editProfileResponse = response.body();
+                                if (editProfileResponse.getStatus().equals("success")){ //변경 성공시
+                                    Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(edit_profile.this, my_profile.class);
+                                    intent.putExtra("userId",userId);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
+                                    startActivity(intent); //내프로필 화면으로 넘어감
 
 
+                                } else if (editProfileResponse.getStatus().equals("error")) { //이미지가 아닌파일로 시도했을때
+                                    Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
                             }
 
                             @Override
@@ -254,7 +293,6 @@ public class edit_profile extends AppCompatActivity {
 
                             }
                         });
-
 
                     }
                 }
@@ -301,6 +339,10 @@ public class edit_profile extends AppCompatActivity {
 
 
                         break;
+
+                    case 2:
+                        //직접 촬영한 이미지로 변경
+                        //카메라 여는 코드 작성
                 }
 
             }
