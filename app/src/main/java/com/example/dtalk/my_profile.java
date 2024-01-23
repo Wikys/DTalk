@@ -138,9 +138,9 @@ public class my_profile extends AppCompatActivity {
         exit_btn.setOnClickListener(new View.OnClickListener() { //종료버튼 클릭시
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(my_profile.this, friends.class);
+                Intent intent = new Intent(my_profile.this, navi.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
-                startActivity(intent); //내프로필 화면으로 넘어감
+                startActivity(intent); //친구목록 화면으로 넘어감
             }
         });
 

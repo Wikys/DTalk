@@ -2,18 +2,26 @@ package com.example.dtalk;
 
 import static com.example.dtalk.retrofit.RetrofitClient.BASE_URL;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +39,9 @@ import com.example.dtalk.retrofit.editProfileResponse;
 import com.example.dtalk.retrofit.userInformationSearchResponse;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -51,9 +62,13 @@ public class edit_profile extends AppCompatActivity {
     private String[] item;
     private AlertDialog btn_dialog;
     private AlertDialog.Builder builder;
-    private ActivityResultLauncher<String> galleryLauncher;
+    private ActivityResultLauncher<Intent> galleryLauncher;
     private Uri userProfileImgPath;
     private String cSep;
+    private Uri uri = null;
+    private File photoFile;
+
+    private ActivityResultLauncher<Intent> cameraLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,31 +138,57 @@ public class edit_profile extends AppCompatActivity {
         Intent intent = getIntent();
         userId = intent.getStringExtra("userId"); //사용자 아이디 받아옴
 
-        // ActivityResultLauncher 초기화
-        galleryLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                new ActivityResultCallback<Uri>() {
+        // 사진변경 런쳐
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
                     @Override
-                    public void onActivityResult(Uri uri) {
-                        // 선택한 이미지 처리 코드를 여기에 추가
-                        if (uri != null){ //혹시나 사용자가 x눌렀을떄 예외처리용
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) { //이동한 액티비티에서 RESULT_OK사인이오면
+                            Intent intent = result.getData(); // 넘어온 사진데이터를 인텐트로 받고
+                            uri = intent.getData(); // uri타입 변수에 다시넣어줌 // 해당이미지파일의 경로 즉 uri정보를 담아줌
+
                             // Glide를 사용하여 이미지 로딩
                             Glide.with(edit_profile.this)
                                     .load(uri) // friend.getImageUrl()는 이미지의 URL 주소
                                     .override(130, 130)//크기 조절
                                     .into(profile_image);
+                            //override : 이미지 가로 세로크기 설정 (없어도됨)
+                            //into : 화면에 보여줄 이미지뷰 객체
+                            //load : 선택 애미지 정보
 
                             userProfileImgPath = Uri.parse(getRealPathFromURI(uri)); //이미지 경로 담아줌(변경버튼 눌렀을때 서버에 넘겨주기위해)
                             cSep = "changeProfileImg"; //이미지 변경이라고 구분자로 서버에 알려줌
-                        }else{
-                            //null이면 이미지변경 취소
-
                         }
 
+                    }
+                });
+
+        // 카메라 런쳐
+        cameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) { //이동한 액티비티에서 RESULT_OK사인이오면
+                            Intent intent = result.getData(); // 넘어온 사진데이터를 인텐트로 받고
+                            uri = intent.getData(); // uri타입 변수에 다시넣어줌 // 해당이미지파일의 경로 즉 uri정보를 담아줌
+                            Log.d("TAG", "onActivityResult확인: "+result.getData());
+
+                            // Glide를 사용하여 이미지 로딩
+                            Glide.with(edit_profile.this)
+                                    .load(uri) // friend.getImageUrl()는 이미지의 URL 주소
+                                    .override(130, 130)//크기 조절
+                                    .into(profile_image);
+                            //override : 이미지 가로 세로크기 설정 (없어도됨)
+                            //into : 화면에 보여줄 이미지뷰 객체
+                            //load : 선택 애미지 정보
+
+                            userProfileImgPath = Uri.parse(getRealPathFromURI(uri)); //이미지 경로 담아줌(변경버튼 눌렀을때 서버에 넘겨주기위해)
+                            cSep = "changeProfileImg"; //이미지 변경이라고 구분자로 서버에 알려줌
+                        }
 
                     }
-                }
-        );
+                });
+
 
         service.userInformationSearch(userId, "myInfo").enqueue(new Callback<userInformationSearchResponse>() {//친구정보 불러오기
             @Override
@@ -155,7 +196,7 @@ public class edit_profile extends AppCompatActivity {
                 userInformationSearchResponse result = response.body();
 
                 //이미지 변경시 캐시된 이전 이미지를 사용하는 경우 방지하기위해 랜덤 쿼리 매개변수를 먹여줌
-                String imageUrl = BASE_URL+result.getUserProfileImg();
+                String imageUrl = BASE_URL + result.getUserProfileImg();
                 String imageUrlWithRandomQuery = imageUrl + "?timestamp=" + System.currentTimeMillis();
 
                 Uri uri = Uri.parse(imageUrl);
@@ -198,12 +239,12 @@ public class edit_profile extends AppCompatActivity {
                 RequestBody getUserId = RequestBody.create(MediaType.parse("text/plain"), userId);
 
 
-                if(userNick.equals("")){//유저가 닉네임을 아무것도 안쓰고 저장했을때
+                if (userNick.equals("")) {//유저가 닉네임을 아무것도 안쓰고 저장했을때
                     Toast.makeText(edit_profile.this, "닉네임은 반드시 입력하셔야 합니다.", Toast.LENGTH_SHORT).show();
 
-                }else{
+                } else {
                     //서버통신
-                    if(cSep == null){ //사용자가 이미지를 변경하지 않았으면
+                    if (cSep == null) { //사용자가 이미지를 변경하지 않았으면
 
                         RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), "noChangesToImg");
 
@@ -214,14 +255,14 @@ public class edit_profile extends AppCompatActivity {
 //                        MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image." + fileExtension, requestBody);
                         MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image.");
 
-                        service.editProfile(userProfileImg,userNick,userStatus,sep,getUserId).enqueue(new Callback<editProfileResponse>() {
+                        service.editProfile(userProfileImg, userNick, userStatus, sep, getUserId).enqueue(new Callback<editProfileResponse>() {
                             @Override
                             public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
                                 editProfileResponse editProfileResponse = response.body();
-                                if (editProfileResponse.getStatus().equals("success")){ //변경 성공시
+                                if (editProfileResponse.getStatus().equals("success")) { //변경 성공시
                                     Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(edit_profile.this, my_profile.class);
-                                    intent.putExtra("userId",userId);
+                                    intent.putExtra("userId", userId);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
                                     startActivity(intent); //내프로필 화면으로 넘어감
 
@@ -237,7 +278,7 @@ public class edit_profile extends AppCompatActivity {
                             }
                         });
 
-                    }else if(cSep.equals("changeProfileImg")){//이미지를 변경하고 저장을 눌렀으면
+                    } else if (cSep.equals("changeProfileImg")) {//이미지를 변경하고 저장을 눌렀으면
                         File Img = new File(userProfileImgPath.toString());
                         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(userProfileImgPath.toString());
                         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
@@ -246,14 +287,14 @@ public class edit_profile extends AppCompatActivity {
 
                         RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), cSep); //상태
 
-                        service.editProfile(userProfileImg,userNick,userStatus,sep,getUserId).enqueue(new Callback<editProfileResponse>() {
+                        service.editProfile(userProfileImg, userNick, userStatus, sep, getUserId).enqueue(new Callback<editProfileResponse>() {
                             @Override
                             public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
                                 editProfileResponse editProfileResponse = response.body();
-                                if (editProfileResponse.getStatus().equals("success")){ //변경 성공시
+                                if (editProfileResponse.getStatus().equals("success")) { //변경 성공시
                                     Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(edit_profile.this, my_profile.class);
-                                    intent.putExtra("userId",userId);
+                                    intent.putExtra("userId", userId);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
                                     startActivity(intent); //내프로필 화면으로 넘어감
 
@@ -262,6 +303,7 @@ public class edit_profile extends AppCompatActivity {
                                     Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
+
                             @Override
                             public void onFailure(Call<editProfileResponse> call, Throwable t) {
                             }
@@ -271,14 +313,14 @@ public class edit_profile extends AppCompatActivity {
                         RequestBody sep = RequestBody.create(MediaType.parse("text/plain"), "defaultProfileImg");
                         MultipartBody.Part userProfileImg = MultipartBody.Part.createFormData("userProfileImg", userId + "_Profile_Image.");
 
-                        service.editProfile(userProfileImg,userNick,userStatus,sep,getUserId).enqueue(new Callback<editProfileResponse>() {
+                        service.editProfile(userProfileImg, userNick, userStatus, sep, getUserId).enqueue(new Callback<editProfileResponse>() {
                             @Override
                             public void onResponse(Call<editProfileResponse> call, Response<editProfileResponse> response) {
                                 editProfileResponse editProfileResponse = response.body();
-                                if (editProfileResponse.getStatus().equals("success")){ //변경 성공시
+                                if (editProfileResponse.getStatus().equals("success")) { //변경 성공시
                                     Toast.makeText(edit_profile.this, editProfileResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(edit_profile.this, my_profile.class);
-                                    intent.putExtra("userId",userId);
+                                    intent.putExtra("userId", userId);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //기존 플래그 삭제하고 새로운 플래그달음
                                     startActivity(intent); //내프로필 화면으로 넘어감
 
@@ -331,7 +373,7 @@ public class edit_profile extends AppCompatActivity {
                         //기본이미지로 변경 클릭시 프사 기본이미지로 변경
                         // Glide를 사용하여 이미지 로딩
                         Glide.with(edit_profile.this)
-                                .load(BASE_URL+"/DTalk/img/default.jpg") // 기본프사
+                                .load(BASE_URL + "/DTalk/img/default.jpg") // 기본프사
                                 .into(profile_image);
 
 
@@ -342,7 +384,8 @@ public class edit_profile extends AppCompatActivity {
 
                     case 2:
                         //직접 촬영한 이미지로 변경
-                        //카메라 여는 코드 작성
+                        openCamera();
+
                 }
 
             }
@@ -351,10 +394,23 @@ public class edit_profile extends AppCompatActivity {
         alertDialog.show();
 
     }
+
     // 앨범 열기 메서드
     private void openGallery() {
-        galleryLauncher.launch("image/*"); // 이미지 선택할 수 있는 앨범 열기
+//        galleryLauncher.launch("image/*"); // 이미지 선택할 수 있는 앨범 열기
+        Intent intent = new Intent(); //암시적인텐트
+        intent.setType("image/*"); // 가져올 컨텐츠 타입
+        intent.setAction(Intent.ACTION_GET_CONTENT); //앨범호출액션
+        galleryLauncher.launch(intent);
     }
+    private void openCamera(){ //카메라여는 메소드
+        Intent intent = new Intent();
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraLauncher.launch(intent);
+
+    }
+
+
     public String getRealPathFromURI(Uri contentUri) { //content:// 형식의 로컬주소 실제주소로 변경해주는 메소드
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
