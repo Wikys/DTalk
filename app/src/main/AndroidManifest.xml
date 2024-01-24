@@ -31,6 +31,17 @@
         android:theme="@style/Theme.DTalk"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.dtalk.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name=".one_to_many_chat"
             android:exported="true">
@@ -133,6 +144,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+
     </application>
 
 </manifest>

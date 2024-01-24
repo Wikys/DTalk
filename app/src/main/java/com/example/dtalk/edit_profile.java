@@ -11,18 +11,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.loader.content.CursorLoader;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -37,11 +44,16 @@ import com.example.dtalk.retrofit.RetrofitClient;
 import com.example.dtalk.retrofit.ServerApi;
 import com.example.dtalk.retrofit.editProfileResponse;
 import com.example.dtalk.retrofit.userInformationSearchResponse;
+import com.google.android.gms.common.util.IOUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -67,6 +79,8 @@ public class edit_profile extends AppCompatActivity {
     private String cSep;
     private Uri uri = null;
     private File photoFile;
+    private String photoFilePath ;
+
 
     private ActivityResultLauncher<Intent> cameraLauncher;
 
@@ -85,6 +99,8 @@ public class edit_profile extends AppCompatActivity {
         input_status_message = edit_profile.this.findViewById(R.id.input_status_message);//상태메시지 인풋
         confirm_btn = edit_profile.this.findViewById(R.id.confirm_btn); //프로필 변경 버튼
         cancel_btn = edit_profile.this.findViewById(R.id.cancel_btn);//프로필 변경 취소 버튼
+
+
 
         //쉐어드에서 JWT 가져오기
         String Token = preferences.getString("JWT", ""); // 토큰값 가져오기 없으면 ""
@@ -158,6 +174,7 @@ public class edit_profile extends AppCompatActivity {
 
                             userProfileImgPath = Uri.parse(getRealPathFromURI(uri)); //이미지 경로 담아줌(변경버튼 눌렀을때 서버에 넘겨주기위해)
                             cSep = "changeProfileImg"; //이미지 변경이라고 구분자로 서버에 알려줌
+                            Log.d("TAG11", "onActivityResult: uri : "+uri+" cSep : "+cSep);
                         }
 
                     }
@@ -169,21 +186,29 @@ public class edit_profile extends AppCompatActivity {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) { //이동한 액티비티에서 RESULT_OK사인이오면
-                            Intent intent = result.getData(); // 넘어온 사진데이터를 인텐트로 받고
-                            uri = intent.getData(); // uri타입 변수에 다시넣어줌 // 해당이미지파일의 경로 즉 uri정보를 담아줌
-                            Log.d("TAG", "onActivityResult확인: "+result.getData());
+                            // 카메라 앱에서 이미지를 촬영한 후, 파일을 FileProvider를 통해 Uri로 변환
+                            Uri fileUri = FileProvider.getUriForFile(edit_profile.this, "com.example.dtalk.fileprovider", photoFile);
+
+//                            Intent intent = result.getData(); // 넘어온 사진데이터를 인텐트로 받고
+//                            uri = intent.getData(); // uri타입 변수에 다시넣어줌 // 해당이미지파일의 경로 즉 uri정보를 담아줌
+//                            Log.d("TAG", "onActivityResult확인: " + result.getData());
+
+                            //uri 얻어오기
 
                             // Glide를 사용하여 이미지 로딩
                             Glide.with(edit_profile.this)
-                                    .load(uri) // friend.getImageUrl()는 이미지의 URL 주소
+                                    .load(fileUri) // friend.getImageUrl()는 이미지의 URL 주소
                                     .override(130, 130)//크기 조절
                                     .into(profile_image);
                             //override : 이미지 가로 세로크기 설정 (없어도됨)
                             //into : 화면에 보여줄 이미지뷰 객체
                             //load : 선택 애미지 정보
 
-                            userProfileImgPath = Uri.parse(getRealPathFromURI(uri)); //이미지 경로 담아줌(변경버튼 눌렀을때 서버에 넘겨주기위해)
+//                            userProfileImgPath = fileUri; //이미지 경로 담아줌(변경버튼 눌렀을때 서버에 넘겨주기위해)
+                            userProfileImgPath = Uri.parse(getCameraRealPathFromUri(edit_profile.this,fileUri));
+
                             cSep = "changeProfileImg"; //이미지 변경이라고 구분자로 서버에 알려줌
+                            Log.d("TAG11", "onActivityResult: uri : "+userProfileImgPath+" cSep : "+cSep);
                         }
 
                     }
@@ -239,7 +264,7 @@ public class edit_profile extends AppCompatActivity {
                 RequestBody getUserId = RequestBody.create(MediaType.parse("text/plain"), userId);
 
 
-                if (userNick.equals("")) {//유저가 닉네임을 아무것도 안쓰고 저장했을때
+                if (input_nick.equals("")) {//유저가 닉네임을 아무것도 안쓰고 저장했을때
                     Toast.makeText(edit_profile.this, "닉네임은 반드시 입력하셔야 합니다.", Toast.LENGTH_SHORT).show();
 
                 } else {
@@ -403,11 +428,43 @@ public class edit_profile extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT); //앨범호출액션
         galleryLauncher.launch(intent);
     }
-    private void openCamera(){ //카메라여는 메소드
-        Intent intent = new Intent();
-        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraLauncher.launch(intent);
 
+    private void openCamera() { //카메라여는 메소드
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // 카메라로 찍은 이미지를 저장할 임시 파일 생성
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        if (photoFile != null) {
+            Uri photoUri = FileProvider.getUriForFile(this, "com.example.dtalk.fileprovider", photoFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+            cameraLauncher.launch(intent);
+        }
+
+    }
+    private File createImageFile() throws IOException {
+        // 이미지 파일 이름 생성
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+
+        // 이미지 파일이 저장될 디렉토리 경로 설정 (이 부분은 앱에 따라 다를 수 있음)
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        // 임시 파일 생성
+        File image = File.createTempFile(
+                imageFileName,  /* 파일 이름 */
+                ".jpg",         /* 파일 확장자 */
+                storageDir      /* 저장될 디렉토리 */
+        );
+
+        // 임시 파일의 경로를 photoFilePath 변수에 저장
+        photoFilePath = image.getAbsolutePath();
+
+        return image;
     }
 
 
@@ -423,4 +480,43 @@ public class edit_profile extends AppCompatActivity {
         cursor.close();
         return filePath;
     }
+    public String getCameraRealPathFromUri(Context context, Uri uri) { //content:// 형식의 로컬 주소 실제 주소로 변경해주는 메소드
+        Uri returnUri = uri;
+        Cursor returnCursor = context.getContentResolver().query(returnUri, null, null, null, null);
+        /*
+         * Get the column indexes of the data in the Cursor,
+         *     * move to the first row in the Cursor, get the data,
+         *     * and display it.
+         * */
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+        returnCursor.moveToFirst();
+        String name = (returnCursor.getString(nameIndex));
+        String size = (Long.toString(returnCursor.getLong(sizeIndex)));
+        File file = new File(context.getFilesDir(), name);
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(uri);
+            FileOutputStream outputStream = new FileOutputStream(file);
+            int read = 0;
+            int maxBufferSize = 1 * 1024 * 1024;
+            int bytesAvailable = inputStream.available();
+
+            //int bufferSize = 1024;
+            int bufferSize = Math.min(bytesAvailable, maxBufferSize);
+
+            final byte[] buffers = new byte[bufferSize];
+            while ((read = inputStream.read(buffers)) != -1) {
+                outputStream.write(buffers, 0, read);
+            }
+            Log.e("File Size", "Size " + file.length());
+            inputStream.close();
+            outputStream.close();
+            Log.e("File Path", "Path " + file.getPath());
+            Log.e("File Size", "Size " + file.length());
+        } catch (Exception e) {
+            Log.e("Exception", e.getMessage());
+        }
+        return file.getPath();
+    }
+
 }
